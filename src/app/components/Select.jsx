@@ -8,7 +8,7 @@ const Select = () => {
         What are you feeling today?
         </h4> */}
 {/* Title */}
-            <h4 className='bg-white rounded-full p-3 px-5 relative' style={{ boxShadow: '0 -4px 8px #ede9c7, -2px -2px 4px #dec5e0, 2px -2px 4px #ede9c7, 0 4px 8px #d1e0c5' }}>
+            <h4 className='bg-white text-black rounded-full p-3 px-5 relative' style={{ boxShadow: '0 -4px 8px #ede9c7, -2px -2px 4px #dec5e0, 2px -2px 4px #ede9c7, 0 4px 8px #d1e0c5' }}>
                 What are you facing currently?
             </h4>
 

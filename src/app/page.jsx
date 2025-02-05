@@ -19,7 +19,7 @@ export default function Home() {
 
       <div className='flex flex-col sm:ml-0 mb-4 md:ml-[5vw]  md:items-start items-center justify-center'>
 
-      <h5 className=' mb-1  sm:text-lg md:text-xl  bg-slate-50 p-5 mt-3 rounded-full  sm:w-[100vw] md:w-[90vw] lg:w-[65vw] font-semibold font-mono'>This map shows people who have recently faced the same issue as your's.</h5>
+      <h5 className='text-black mb-1  sm:text-lg md:text-xl  bg-slate-50 p-5 mt-3 rounded-full  sm:w-[100vw] md:w-[90vw] lg:w-[65vw] font-semibold font-mono'>This map shows people who have recently faced the same issue as your's.</h5>
       <div className=' border-yellow-400 border-2 mt-2 rounded-xl w-[96vw] sm:w-[95vw] h-[31vh] sm:h-[40vh] md:w-[90vw] md:h-[56vh]   lg:w-[65vw] lg:h-[60vh] overflow-hidden z-10'>
       <MapComp/>
       </div>
