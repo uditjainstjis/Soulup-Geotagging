@@ -69,9 +69,11 @@ const PoiMarkers = ({ pois }) => {
                     onCloseClick={() => setSelectedPoi(null)} // Close on close click
                 >
                     <div>
-                        <h1>Udit Jain haha</h1>
-                        <p>Latitude:{selectedPoi.location.lat}</p>
-                        <p>Longitude:{selectedPoi.location.lng}</p>
+                        <h1>John Cena</h1>
+                        <p>Depressed</p>
+                        <p>Delhi</p>
+                        {/* <p>Latitude:{selectedPoi.location.lat}</p> */}
+                        {/* <p>Longitude:{selectedPoi.location.lng}</p> */}
                         {/* Add more content here based on your POI data */}
                         <p>Key: {selectedPoi.key}</p>
                     </div>
