@@ -3,13 +3,14 @@
 import {Circle} from './circle'
 import { useState } from 'react';
 import React,{useCallback} from 'react';
-import { APIProvider, Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
 
 
 
 const PoiMarkers = ({ pois }) => {
     const [circleCenter, setCircleCenter] = useState(null)
-
+    const [selectedPoi, setSelectedPoi] = useState(null)
+    const [poiData, setPoiData] = useState({});
     // const contentString = `
     // <div>
     //   <h1>Udit Jain</h1>
@@ -34,10 +35,11 @@ const PoiMarkers = ({ pois }) => {
     //     ariaLabel: "Psychology",
     //   });
 
-    const handleClick = useCallback((ev) => {
+    const handleClick = useCallback((ev, poi) => {
         if(!ev.latLng) return;
         console.log('marker clicked:', ev.latLng.toString());
         setCircleCenter(ev.latLng) ;
+        setSelectedPoi(poi);
         // infoWindow.open({anchor: ev});
         // map.panTo(ev.latLng);
       });
@@ -55,11 +57,27 @@ const PoiMarkers = ({ pois }) => {
           fillOpacity={0.3}
         />
       {pois.map((poi) => (
-        <AdvancedMarker key={poi.key} position={poi.location} clickable={true} onClick={handleClick}>
+        <AdvancedMarker key={poi.key} position={poi.location} clickable={true} onClick={(event) => handleClick(event, poi)}>
         <Pin background={'#FBBC04'} glyphColor={'#000'} borderColor={'#000'} />
-        //use glyph property to write something on pin
+        {/* //use glyph property to write something on pin */}
         </AdvancedMarker>
       ))}
+
+      {selectedPoi && (
+                <InfoWindow
+                    position={selectedPoi.location}
+                    onCloseClick={() => setSelectedPoi(null)} // Close on close click
+                >
+                    <div>
+                        <h1>Udit Jain haha</h1>
+                        <p>Latitude:{selectedPoi.location.lat}</p>
+                        <p>Longitude:{selectedPoi.location.lng}</p>
+                        {/* Add more content here based on your POI data */}
+                        <p>Key: {selectedPoi.key}</p>
+                    </div>
+                </InfoWindow>
+            )}
+
     </>
   );
 };
@@ -84,9 +102,9 @@ const locations = [
 
 const MapComp = () => {
   return (
-    <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
+    <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY} >
       <Map
-        style={{ width: '60vw', height: '60vh', margin: '20vh auto' }}
+        // style={{ width: '60vw', height: '60vh'}}
         defaultCenter={{ lat: 28.6138954, lng: 77.2090057 }}
         defaultZoom={6}
         gestureHandling={'greedy'}

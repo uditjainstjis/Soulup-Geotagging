@@ -1,14 +1,25 @@
 "use client";
 import { useEffect, useState } from "react";
+import CoordsToCity from './CoordsToCity'
 
 async function getIPLocation() {
-  const res = await fetch("/api/get-ip-location"); // Calls Next.js API route
-  const data = await res.json();
-
-  console.log("IP-based Location:", data);
-  alert(`IP Location:\nLatitude: ${data.latitude}\nLongitude: ${data.longitude}\nCity: ${data.city}, ${data.region}, ${data.country}`);
-
-  return data;
+  try {
+    const res = await fetch("/api/get-ip-location"); // Calls Next.js API route
+    const data = await res.json();
+    
+    if (res.ok) {
+      // If the API returns successfully, log and alert the location data
+      console.log("IP-based Location:", data);
+      alert(`IP Location: ${data.city}, ${data.region}, ${data.country}`);
+      return data;
+    } else {
+      throw new Error("Failed to fetch IP location");
+    }
+  } catch (error) {
+    console.error("Error fetching IP location:", error);
+    alert("Unable to retrieve IP location.");
+    return null;
+  }
 }
 
 export function useLocation() {
@@ -32,10 +43,16 @@ export function useLocation() {
           setLocation(geoLocation);
         },
         async (err) => {
-          console.warn("Geolocation denied, using IP location", err);
-          setError("Geolocation denied, using IP location");
-          const ipLocation = await getIPLocation();
-          setLocation(ipLocation);
+          if (err.code === err.PERMISSION_DENIED) {
+            console.warn("User denied geolocation, using IP location");
+            alert("Location access denied. Using IP-based location instead.");
+            setError("Geolocation denied, using IP location");
+            const ipLocation = await getIPLocation();
+            setLocation(ipLocation);
+          } else {
+            console.warn("Geolocation error:", err);
+            alert("Unable to retrieve location.");
+          }
         }
       );
     } else {
