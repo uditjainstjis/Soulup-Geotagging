@@ -34,7 +34,7 @@ const Select = () => {
 
             <div className='flex flex-row justify-around mt-6 items-center'>
             <div className="w-[40vw] sm:w-[29vw]  md:w-[50vw] lg:w-32 rounded-2xl md:ml-[-10px]">
-                <select className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 lg:pr-4 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500" defaultValue="">
+                <select className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 sm:pr-8 pr-4 lg:pr-4 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500" defaultValue="">
                     <option value="" disabled>When?</option>
                     <option value="option1">6 hours ago</option>
                     <option value="option3">24 hours ago</option>
