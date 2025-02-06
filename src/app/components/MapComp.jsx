@@ -32,8 +32,8 @@ const PoiMarkers = ({ pois }) => {
           fillColor={'#3b82f6'}
           fillOpacity={0.3}
         />
-      {pois.map((poi) => (
-        <AdvancedMarker key={poi.key} position={poi.location} clickable={true} onClick={(event) => handleClick(event, poi)}>
+      {pois.map((poi,idx) => (
+        <AdvancedMarker key={idx} position={poi.location} clickable={true} onClick={(event) => handleClick(event, poi)}>
         <Pin background={'#FBBC04'} glyphColor={'#000'} borderColor={'#000'} />
         {/* //use glyph property to write something on pin */}
         </AdvancedMarker>
@@ -45,13 +45,12 @@ const PoiMarkers = ({ pois }) => {
                     onCloseClick={() => setSelectedPoi(null)} // Close on close click
                 >
                     <div>
-                        <h1>John Cena</h1>
-                        <p>Depressed</p>
-                        <p>Delhi</p>
+                        <h1 className='text-lg text-semibold'>Faced <span className='font-bold'>{selectedPoi.tag}</span> --{'>'} {selectedPoi.time}</h1>
+                        <p className='text-lg text-semibold'>{selectedPoi.city}</p>
                         {/* <p>Latitude:{selectedPoi.location.lat}</p> */}
                         {/* <p>Longitude:{selectedPoi.location.lng}</p> */}
                         {/* Add more content here based on your POI data */}
-                        <p>Key: {selectedPoi.key}</p>
+                        {/* <p>Key: {selectedPoi._idx}</p> */}
                     </div>
                 </InfoWindow>
             )}
@@ -91,8 +90,11 @@ const MapComp = () => {
         const data = await res.json();
         if (res.ok) {
           console.log("Location:", data);
-          // alert('data recieved', data)
-          // setLocation(data);
+          // alert('data recie÷ved', data)
+
+          setLocation(data);
+          console.log("asdfasdfasdfasd")
+          console.log(data)
         } else {
           throw new Error("Failed to fetch location ry cry");
         }

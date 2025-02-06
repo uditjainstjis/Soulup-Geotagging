@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 
 const LocationSchema = new mongoose.Schema({
-  latitude: {
+  lat: {
     type: mongoose.Decimal128,
     required: true,
   },
-  longitude: {
+  lng: {
     type: mongoose.Decimal128,
     required: true,
   },
@@ -13,10 +13,14 @@ const LocationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  country: {
-    type: String,
-    required: false,
+  tag:{
+    type: String, 
+    required: true,
   },
+  time:{
+    type: String,
+    required: true,
+  } 
 });
 
 const Location = mongoose.models.Location || mongoose.model('Location', LocationSchema);
