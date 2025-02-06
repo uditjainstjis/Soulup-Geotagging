@@ -1,10 +1,47 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 
 const Select = () => {
-    const[buttonText,setButtonText]=useState('Search')
+    const[showButton,setShowButton]=useState(false);
+
+    const[tellButton,setTellButton]=useState('');
+    const[show,setShow]=useState(false);
+
+    const [isDisabled, setisDisabled] = useState(false);
+
+    const[optionValue, setOptionValue]=useState('')
+    const[timeValue, setTimeValue]=useState('')
+
+    function handleChange(event){    
+        setOptionValue(event.target.value);
+        console.log("Selected value:", event.target.value);
+    }
+    function handleTimeChange(event){    
+        setTimeValue(event.target.value);
+        console.log("Selected value:", event.target.value);
+    }
 
 
 
+    useEffect(()=>{
+        if(optionValue.trim()!==''){
+            // setShow(true);
+            setShowButton(true);
+        } else {  // Important: Add an else to handle when the option is cleared
+            // setShow(false);
+            setShowButton(false);
+        }
+
+    },[optionValue])
+    useEffect(()=>{
+        if(timeValue.trim()!==''){
+            // setShow(true);
+            setTellButton(true);
+        } else {  // Important: Add an else to handle when the option is cleared
+            // setShow(false);
+            setTellButton(false);
+        }
+
+    },[timeValue])
 
     return (
         <div>
@@ -13,47 +50,70 @@ const Select = () => {
         What are you feeling today?
         </h4> */}
 {/* Title */}
-            <h4 className='bg-white text-black rounded-full p-3 px-5 relative' style={{ boxShadow: '0 -4px 8px #ede9c7, -2px -2px 4px #dec5e0, 2px -2px 4px #ede9c7, 0 4px 8px #d1e0c5' }}>
+
+            {!show &&(<h4 className='bg-white text-black rounded-full p-3 px-5 relative' style={{ boxShadow: '0 -4px 8px #ede9c7, -2px -2px 4px #dec5e0, 2px -2px 4px #ede9c7, 0 4px 8px #d1e0c5' }}>
                 What are you facing currently?
-            </h4>
+            </h4>)}
+            {show &&(<h4 className='bg-white text-black rounded-full p-3 px-5 relative' style={{ boxShadow: '0 -4px 8px #ede9c7, -2px -2px 4px #dec5e0, 2px -2px 4px #ede9c7, 0 4px 8px #d1e0c5' }}>
+                What are you facing currently?
+            </h4>)}
 
 
 {/* Options for selecting and pushing */}
 
-            <div className='flex flex-col'>
+            <div className='flex flex-col '>
 
-            <div className="relative inline-block w-[75vw] sm:w-[50vw] md:w-[70vw] lg:w-72 rounded-2xl mt-10">
-                <select className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500" defaultValue="">
+            <div className="relative inline-block w-[75vw] sm:w-[50vw] md:w-[70vw] lg:w-72 rounded-2xl mt-9 mx-auto">
+                <select value={optionValue} disabled={isDisabled} onChange={handleChange} className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
                     <option value="" disabled>Select an option</option>
-                    <option value="option1">Anger</option>
-                    <option value="option3">Bipolar Episode</option>
-                    <option value="option3">Anxiety</option>
-                    <option value="custom1">Depression</option>
-                    <option value="custom2">Abuse</option>
-                    <option value="custom2">Divorce</option>
+                    <option value="Anger">Anger</option>
+                    <option value="Bipolar Episode">Bipolar Episode</option>
+                    <option value="Anxiety">Anxiety</option>
+                    <option value="Depression">Depression</option>
+                    <option value="Abuse">Abuse</option>
+                    <option value="Divorce">Divorce</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L17.5 8 10 1.5 2.5 8z" /></svg>
                 </div>
             </div>
 
-            <div className='flex flex-row justify-around mt-6 items-center'>
-            <div className="w-[40vw] sm:w-[29vw]  md:w-[50vw] lg:w-32 rounded-2xl md:ml-[-10px]">
-                <select className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 sm:pr-8 pr-4 lg:pr-4 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500" defaultValue="">
-                    <option value="" disabled>When?</option>
-                    <option value="option1">6 hours ago</option>
-                    <option value="option3"> 24 hours ago</option>
-                    <option value="option3">3 days ago</option>
-                    <option value="custom1">This week</option>
+            
+            {/* <div className='flex flex-row justify-around mt-6 items-center '> */}
+            {show && (<div className="relative inline-block w-[75vw] sm:w-[50vw] md:w-[70vw] mt-9 lg:w-72 rounded-2xl  mx-auto">
+                <select value = {timeValue} onChange={handleTimeChange} className=" block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 sm:pr-8 pr-4 lg:pr-4 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
+                    <option value="" disabled>When did you face this?</option>
+                    <option value="6 hours ago">6 hours ago</option>
+                    <option value="24 hours ago">24 hours ago</option>
+                    <option value="3 days ago">3 days ago</option>
+                    <option value="This week">This week</option>
                 </select>
 
-            </div>
-            <div className='flex flex-col  mt-[-10px] justify-end'>
+            </div>)
+            }
+
+            {/* {showButton&&(<div className='flex flex-col  mt-[-10px] justify-end'>
                 <button className='bg-yellow-500 mt-3 rounded-full w-32 h-11 text-white self-end border-1 '
-                onClick={()=>setButtonText('tell people')}
+                onClick={()=>{setButtonText('tell people');setShow(true)}}
                 >{buttonText}</button>
-            </div>
-            </div>
+            </div>)} */}
+            {showButton&&(<div className='flex flex-col  mt-3 justify-end'>
+                <button className='bg-yellow-500 mt-3 rounded-full px-4 text-bold h-[3.25rem]  text-white self-end border-1 '
+                onClick={()=>{setShow(true);setisDisabled(true);setShowButton(false)}}
+                >Search for people facing same</button>
+            </div>)}
+
+            {tellButton&&(<div className='flex flex-col  justify-end mt-2'>
+                <button className='bg-yellow-500 border-2 border-orange-300 mt-3 rounded-full px-4 text-bold h-[3.25rem]  text-white self-end border-1 '
+                onClick={()=>{}}
+                >Tell People</button>
+            </div>)}
+
+
+
+
+            
+            {/* </div> */}
 
 
             </div>

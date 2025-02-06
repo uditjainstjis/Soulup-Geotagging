@@ -91,7 +91,7 @@ const MapComp = () => {
         const data = await res.json();
         if (res.ok) {
           console.log("Location:", data);
-          alert('data recieved', data)
+          // alert('data recieved', data)
           // setLocation(data);
         } else {
           throw new Error("Failed to fetch location ry cry");
