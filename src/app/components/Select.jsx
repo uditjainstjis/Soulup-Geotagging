@@ -77,7 +77,7 @@ const Select = () => {
 
             
             {/* <div className='flex flex-row justify-around mt-6 items-center '> */}
-            {show && (<div className="relative inline-block w-[75vw] sm:w-[50vw] md:w-[70vw] mt-9 lg:w-72 rounded-2xl  mx-auto">
+            {show && (<div className="animate-fade-in relative inline-block w-[75vw] sm:w-[50vw] md:w-[70vw] mt-9 lg:w-72 rounded-2xl  mx-auto">
                 <select value = {timeValue} onChange={handleTimeChange} className=" block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 sm:pr-8 pr-4 lg:pr-4 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
                     <option value="" disabled>When did you face this?</option>
                     <option value="6 hours ago">6 hours ago</option>
@@ -95,13 +95,13 @@ const Select = () => {
                 >{buttonText}</button>
             </div>)} */}
             {showButton&&(<div className='flex flex-col  mt-3 justify-end'>
-                <button className='bg-yellow-500 mt-3 rounded-full px-4 text-bold h-[3.25rem]  text-white self-end border-1 '
+                <button className=' bg-yellow-500 mt-3 rounded-full px-4 text-bold h-[3.25rem]  text-white self-end border-1 '
                 onClick={()=>{setTimeout(()=>{setShow(true)},3000);setisDisabled(true);setShowButton(false)}}
                 >Search for people facing same</button>
             </div>)}
 
             {tellButton&&(<div className='flex flex-col  justify-end mt-2'>
-                <button className='bg-yellow-500 border-2 border-orange-300 mt-3 rounded-full px-4 text-bold h-[3.25rem]  text-white self-end border-1 '
+                <button className='animate-fade-in bg-yellow-500 border-2 border-orange-300 mt-3 rounded-full px-4 text-bold h-[3.25rem]  text-white self-end border-1 '
                 onClick={()=>{}}
                 >Tell People</button>
             </div>)}
