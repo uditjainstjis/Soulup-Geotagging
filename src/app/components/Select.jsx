@@ -42,7 +42,7 @@ const Select = () => {
                 <select className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 sm:pr-8 pr-4 lg:pr-4 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500" defaultValue="">
                     <option value="" disabled>When?</option>
                     <option value="option1">6 hours ago</option>
-                    <option value="option3">24 hours ago</option>
+                    <option value="option3"> 24 hours ago</option>
                     <option value="option3">3 days ago</option>
                     <option value="custom1">This week</option>
                 </select>

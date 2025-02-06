@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongodb'; // Import the connection function
 import Location from '../../../models/location'
 
-export async function GET(request) {
+export async function GET() {
   try {
-    const db = await connectToDatabase(); 
+    await connectToDatabase(); 
     const locations = await Location.find(); 
     
     return NextResponse.json(locations);

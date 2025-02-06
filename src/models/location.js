@@ -20,6 +20,6 @@ const LocationSchema = new mongoose.Schema({
 });
 
 const Location = mongoose.models.Location || mongoose.model('Location', LocationSchema);
-const Locat = new Location({"latitude":1234123.123412341,"longitude":1234123.123412341,"city":"Delhi","country":"India"});
-await Locat.save();
+// const Locat = new Location({"latitude":1234123.123412341,"longitude":1234123.123412341,"city":"Delhi","country":"India"});
+// await Locat.save();
 export default Location;
