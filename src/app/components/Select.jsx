@@ -1,6 +1,11 @@
-import React from 'react'
+import React,{useState} from 'react'
 
 const Select = () => {
+    const[buttonText,setButtonText]=useState('Search')
+
+
+
+
     return (
         <div>
 
@@ -38,12 +43,15 @@ const Select = () => {
                     <option value="" disabled>When?</option>
                     <option value="option1">6 hours ago</option>
                     <option value="option3">24 hours ago</option>
+                    <option value="option3">3 days ago</option>
                     <option value="custom1">This week</option>
                 </select>
 
             </div>
             <div className='flex flex-col  mt-[-10px] justify-end'>
-                <button className='bg-yellow-500 mt-3 rounded-full w-32 h-11 text-white self-end border-1 '>tell people</button>
+                <button className='bg-yellow-500 mt-3 rounded-full w-32 h-11 text-white self-end border-1 '
+                onClick={()=>setButtonText('tell people')}
+                >{buttonText}</button>
             </div>
             </div>
 

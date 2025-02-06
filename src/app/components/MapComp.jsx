@@ -1,7 +1,7 @@
 "use client"
 
 import {Circle} from './circle'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import React,{useCallback} from 'react';
 import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
 
@@ -11,37 +11,13 @@ const PoiMarkers = ({ pois }) => {
     const [circleCenter, setCircleCenter] = useState(null)
     const [selectedPoi, setSelectedPoi] = useState(null)
     const [poiData, setPoiData] = useState({});
-    // const contentString = `
-    // <div>
-    //   <h1>Udit Jain</h1>
-    //   <div>
-    //     <p>
-    //       <b>Happy</b>
-          
-    //       I was facing extreme happiness since 1month so tried, talking to sad people and become sad, which helped me alot!
-    //     </p>
-    //     <p>
-    //       Attribution: Soulup,
-    //       <a href="https://soulup.com">
-    //         https://soulup.com
-    //       </a>
-    //       (last visited June 22, 2024).
-    //     </p>
-    //   </div>
-    // </div>`;
 
-    // const infoWindow = new google.maps.InfoWindow({
-    //     content: contentString,
-    //     ariaLabel: "Psychology",
-    //   });
 
     const handleClick = useCallback((ev, poi) => {
         if(!ev.latLng) return;
         console.log('marker clicked:', ev.latLng.toString());
         setCircleCenter(ev.latLng) ;
         setSelectedPoi(poi);
-        // infoWindow.open({anchor: ev});
-        // map.panTo(ev.latLng);
       });
 
 
@@ -84,7 +60,7 @@ const PoiMarkers = ({ pois }) => {
   );
 };
 
-const locations = [
+const sampleLocations = [
   { key: 'a', location: { lat: 30.65608095, lng: 77.24079592327321 } },
   { key: 'b', location: { lat: 26.9154576, lng: 79.8189817 } },
   { key: 'c', location: { lat: 29.1562688, lng: 75.7292303 } },
@@ -103,6 +79,32 @@ const locations = [
 
 
 const MapComp = () => {
+  const [locations, setLocation] = useState(sampleLocations);
+  const [error, setError] = useState(null);
+
+
+
+  useEffect(() => { 
+    async function getLocations() {
+      try {
+        const res = await fetch("/api/Loc"); // Calls Next.js API route
+        const data = await res.json();
+        if (res.ok) {
+          console.log("Location:", data);
+          alert('data recieved', data)
+          // setLocation(data);
+        } else {
+          throw new Error("Failed to fetch location ry cry");
+        }
+      } catch (error) {
+        console.error("Error fetching location:", error);
+        setError("Failed to fetch location");
+      }
+    }
+    getLocations();
+  },[])
+
+
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY} >
       <Map

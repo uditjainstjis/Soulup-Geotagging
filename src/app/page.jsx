@@ -10,7 +10,8 @@ export default function Home() {
   
 
   //Location processing here
-  useLocation()
+  // useLocation()
+  
 
 
 

@@ -8,7 +8,6 @@ async function getIPLocation() {
     const data = await res.json();
     
     if (res.ok) {
-      // If the API returns successfully, log and alert the location data
       console.log("IP-based Location:", data);
       alert(`IP Location: ${data.city}, ${data.region}, ${data.country}`);
       return data;
