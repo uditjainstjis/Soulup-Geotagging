@@ -24,20 +24,17 @@ const Select = () => {
 
     useEffect(()=>{
         if(optionValue.trim()!==''){
-            // setShow(true);
-            setShowButton(true);
-        } else {  // Important: Add an else to handle when the option is cleared
-            // setShow(false);
+            setShowButton(true)
+        } else {  
             setShowButton(false);
         }
 
     },[optionValue])
     useEffect(()=>{
         if(timeValue.trim()!==''){
-            // setShow(true);
-            setTellButton(true);
-        } else {  // Important: Add an else to handle when the option is cleared
-            // setShow(false);
+
+            setTimeout(()=>{setTellButton(true)},1450)
+        } else {
             setTellButton(false);
         }
 
@@ -99,7 +96,7 @@ const Select = () => {
             </div>)} */}
             {showButton&&(<div className='flex flex-col  mt-3 justify-end'>
                 <button className='bg-yellow-500 mt-3 rounded-full px-4 text-bold h-[3.25rem]  text-white self-end border-1 '
-                onClick={()=>{setShow(true);setisDisabled(true);setShowButton(false)}}
+                onClick={()=>{setTimeout(()=>{setShow(true)},3000);setisDisabled(true);setShowButton(false)}}
                 >Search for people facing same</button>
             </div>)}
 
