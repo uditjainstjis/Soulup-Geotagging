@@ -63,12 +63,26 @@ const Select = () => {
             <div className="relative inline-block w-[75vw] sm:w-[50vw] md:w-[70vw] lg:w-72 rounded-2xl mt-9 mx-auto">
                 <select value={optionValue} disabled={isDisabled} onChange={handleChange} className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
                     <option value="" disabled>Select an option</option>
-                    <option value="Anger">Anger</option>
-                    <option value="Bipolar Episode">Bipolar Episode</option>
-                    <option value="Anxiety">Anxiety</option>
+                    <option value="Lonely">Lonely</option>
+                    <option value="Anxious">Anxious</option>
+                    <option value="Binge Eating">Binge Eating</option>
+                    <option value="Overthinking">Overthinking</option>
                     <option value="Depression">Depression</option>
-                    <option value="Abuse">Abuse</option>
-                    <option value="Divorce">Divorce</option>
+                    <option value="Sleeplessness">Sleeplessness</option>
+                    <option value="Demotivated">Demotivated</option>
+                    <option value="Job Burnout">Job Burnout</option>
+                    <option value="Unfulfilled at Work">Unfulfilled at Work</option>
+                    <option value="Financial Stress">Financial Stress</option>
+                    <option value="Substance Addiction">Substance Addiction</option>
+                    <option value="Porn Addiction">Porn Addiction</option>
+                    <option value="Dealing with Abuse">Dealing with Abuse</option>
+                    <option value="Marital Issues">Marital Issues</option>
+                    <option value="Heartbreak">Heartbreak</option>
+                    <option value="Relationship Stress">Relationship Stress</option>
+                    <option value="Struggling with Health">Struggling with Health</option>
+                    <option value="Unsupportive Family">Unsupportive Family</option>
+                    <option value="Body Image Issues">Body Image Issues</option>
+                    <option value="Social Anxiety">Social Anxiety</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L17.5 8 10 1.5 2.5 8z" /></svg>
