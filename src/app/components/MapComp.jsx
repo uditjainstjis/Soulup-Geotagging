@@ -4,7 +4,7 @@ import {Circle} from './circle'
 import { useEffect, useState } from 'react';
 import React,{useCallback} from 'react';
 import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
-
+import { useRouter } from 'next/navigation'
 
 
 const PoiMarkers = ({ pois }) => {
@@ -80,7 +80,7 @@ const sampleLocations = [
 const MapComp = () => {
   const [locations, setLocation] = useState(sampleLocations);
   const [error, setError] = useState(null);
-
+  const router = useRouter()
 
 
   useEffect(() => { 
@@ -90,13 +90,18 @@ const MapComp = () => {
         const data = await res.json();
         if (res.ok) {
           console.log("Location:", data);
-          // alert('data recie÷ved', data)
-
           setLocation(data);
           console.log("asdfasdfasdfasd")
+          console.log(res)
           console.log(data)
         } else {
-          throw new Error("Failed to fetch location ry cry");
+          if(res.status==401){
+            router.push('/signin')
+            // console.error("User not signed In")
+            console.log("User not signed In")
+          }else{
+          throw new Error("Failed to fetch location ;(",res);
+          }
         }
       } catch (error) {
         console.error("Error fetching location:", error);
