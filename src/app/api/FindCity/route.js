@@ -26,7 +26,8 @@ export async function POST(req){
         const data = response.data;
         // console.log(data);
 
-        const District = data.results[0].address_components[1].long_name
+        const District = data.results[0].address_components[2].long_name
+        // const District = data
         console.log(District)
 
         return NextResponse.json({District});

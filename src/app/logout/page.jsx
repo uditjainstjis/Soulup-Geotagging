@@ -8,7 +8,7 @@ export default function Component() {
 
   // }, [session, router]); 
   if (session) {
-    redirect("/"); // This works in the App Router
+    // redirect("signin"); // This works in the App Router
   }
 
   return (
