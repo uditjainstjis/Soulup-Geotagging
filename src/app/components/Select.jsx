@@ -6,6 +6,11 @@ import Buttons from './buttons'
 import SelectDropdown from './SelectDropdown'
 import { MainLocations } from './contexts';
 
+
+
+// Usage example:
+// searchPeopleWithSameIssue(encodedTag, setLocs);
+
 const Select = () => {
     var {Locs, setLocs} = useContext(MainLocations)
 
@@ -22,12 +27,14 @@ const Select = () => {
     const {location, locationRecieved, city} = useUserLocation();
     function handleTellPeople(){
 
+
         const sendingBody = {
             city:city,
             tag:optionValue,
             time:timeValue,
             location:{lat:location.latitude, lng:location.longitude},
         }
+        const encodedTag = encodeURIComponent(optionValue)
         console.log("I am sending this", sendingBody)
         if(timeValue.trim()!==''){
             if(locationRecieved){
@@ -39,7 +46,10 @@ const Select = () => {
                     ,
                     body:JSON.stringify(sendingBody)
                 }).then(response=>response.json())
-                  .then(data=>console.log("bheja tag add krne ko", data))
+                  .then(data=>{
+                    console.log("bheja tag add krne ko", data)
+                    searchPeopleWithSameIssue(encodedTag, setLocs)
+                })
                   .catch((err)=>{console.log("ni bhejpaya",err)})
             }else{
                 alert("Cannot proceed, Allow Location from the setting's of the browser")
@@ -50,6 +60,27 @@ const Select = () => {
     }
 
 
+    async function searchPeopleWithSameIssue(encodedTag, setLocs) {
+        try {
+
+            const response = await fetch(`api/Search-People-With-Same-Issue?tag=${encodedTag}`, { method: 'GET' });
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log("log data acc to tag", data);
+                setLocs(data);
+                return data;
+            } else {
+                const errorData = await response.json();
+                console.error('Error response:', errorData);
+                return errorData;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert("An error occurred while searching. Please try again later.");
+        }
+    }
+
 
     function handleFirstButton(){
         setTimeout(()=>{setShow(true)},3000);
@@ -58,21 +89,8 @@ const Select = () => {
         //API Part
         const encodedTag = encodeURIComponent(optionValue)
         if(optionValue.trim()!==''){
-            fetch(`api/Search-People-With-Same-Issue?tag=${encodedTag}`,{method:'GET'})
-            .then(response=>{
-                if(response.ok){
-                    return response.json().then(data =>{console.log("log data acc to tag",data); setLocs(data)})
-                }else{
-                    return response.json();
-                }
-            })
-            .then(data => {
-                console.log('Received data for loc basis of tags:', data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert("An error occurred while searching. Please try again later.");
-            });
+
+            searchPeopleWithSameIssue(encodedTag, setLocs)
 
         }else{
             alert("Select some option to Search for that")
