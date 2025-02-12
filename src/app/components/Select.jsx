@@ -63,7 +63,7 @@ const Select = () => {
     async function searchPeopleWithSameIssue(encodedTag, setLocs) {
         try {
 
-            const response = await fetch(`api/Search-People-With-Same-Issue?tag=${encodedTag}`, { method: 'GET' });
+            const response = await fetch(`api/Search-People-With-Same-Issue?tag=${encodedTag}&city=${city}`, { method: 'GET' });
             
             if (response.ok) {
                 const data = await response.json();
