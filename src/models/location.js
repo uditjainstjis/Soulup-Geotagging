@@ -8,6 +8,8 @@ const LocationSchema = new mongoose.Schema({
   city: { type: String, required: true },
   tag: { type: String, required: true },
   time: { type: String, required: true },
+  email: { type: String, required: true },
+  name: { type: String},
 });
 
 const Location = mongoose.models.Location || mongoose.model('Location', LocationSchema);

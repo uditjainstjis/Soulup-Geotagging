@@ -6,7 +6,7 @@ import axios from 'axios'
 export function useUserLocation() {
   const [location, setLocation] = useState();
   const [error, setError] = useState(null);
-  const [locationRecieved, setLocationRecieved] = useState(false);
+  const [locationRecieved, setLocationRecieved] = useState(true);
   const [city, setCity] = useState()
 
   useEffect(() => {

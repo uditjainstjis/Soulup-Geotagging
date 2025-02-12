@@ -17,12 +17,15 @@ const Select = () => {
     const[showButton,setShowButton]=useState(false);
 
     const[tellButton,setTellButton]=useState('');
+    const[showAgeGender, setShowAgeGender] = useState(false);
     const[show,setShow]=useState(false);
 
     const [isDisabled, setisDisabled] = useState(false);
 
     const[optionValue, setOptionValue]=useState('')
     const[timeValue, setTimeValue]=useState('')
+    const[ageValue, setAgeValue]=useState('')
+    const[genderValue, setGenderValue]=useState('')
 
     const {location, locationRecieved, city} = useUserLocation();
     function handleTellPeople(){
@@ -63,7 +66,7 @@ const Select = () => {
     async function searchPeopleWithSameIssue(encodedTag, setLocs) {
         try {
 
-            const response = await fetch(`api/Search-People-With-Same-Issue?tag=${encodedTag}&city=${city}`, { method: 'GET' });
+            const response = await fetch(`api/Search-People-With-Same-Issue?tag=${encodedTag}&city=${city}&age=${ageValue}&gender=${genderValue}`, { method: 'GET' });
             
             if (response.ok) {
                 const data = await response.json();
@@ -86,16 +89,16 @@ const Select = () => {
         setTimeout(()=>{setShow(true)},1000);
         setisDisabled(true);
         setShowButton(false)
+        // setShowAgeGender(true);
         //API Part
         const encodedTag = encodeURIComponent(optionValue)
-        if(optionValue.trim()!==''){
+        if(optionValue.trim()!=='' && genderValue.trim()!=='' && ageValue.trim()!==''){
 
             searchPeopleWithSameIssue(encodedTag, setLocs)
 
         }else{
             alert("Select some option to Search for that")
         }
-
 
     }
 
@@ -112,6 +115,7 @@ const Select = () => {
     useEffect(()=>{
         if(optionValue.trim()!==''){
             setShowButton(true)
+            setShowAgeGender(true)
         } else {  
             setShowButton(false);
         }
@@ -145,12 +149,48 @@ const Select = () => {
             
             {show && <TimeDropdown timeValue={timeValue} setTimeValue={setTimeValue} />}
 
+            {showAgeGender &&
+
+            <div className='flex justify-around'>
+
+            <select
+                    value={ageValue}
+                    onChange={(e) => setAgeValue(e.target.value)}
+                    className="appearance-none w-fit  px-2  mt-6 bg-white border border-gray-300 text-gray-700 py-3 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                >
+                    <option value="" disabled>
+                        What's your age?
+                    </option>
+                    <option value="less than 18">less than 18</option>
+                    <option value="between 18 to 30">between 18-30</option>
+                    <option value="between 30-45">between 30-45</option>
+                    <option value="between 45-60">between 45-60</option>
+                    <option value="more than 60">more than 60</option>
+                </select>
+            <select
+                    value={genderValue}
+                    onChange={(e) => setGenderValue(e.target.value)}
+                    className="appearance-none w-fit  px-2  mt-6 bg-white border border-gray-300 text-gray-700 py-3 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                >
+                    <option value="" disabled>
+                        Gender ?
+                    </option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                </div>
+            }
+
+
             <Buttons
                     showButton={showButton}
                     tellButton={tellButton}
                     handleFirstButton={handleFirstButton}
                     handleTellPeople={handleTellPeople}
                 />
+
 
             </div>
 

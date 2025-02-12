@@ -46,8 +46,8 @@ const MapComp = () => {
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY} >
       <Map
         // style={{ width: '60vw', height: '60vh'}}
-        defaultCenter={{ lat: 28.6138954, lng: 77.2090057 }}
-        defaultZoom={6}
+        defaultCenter={{ lat: 23.6138954, lng: 77.2090057 }}
+        defaultZoom={5}
         gestureHandling={'greedy'}
         mapId={'6d4a78bd07042b18'}
 

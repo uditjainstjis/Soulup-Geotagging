@@ -1,10 +1,21 @@
 import { NextResponse } from "next/server";
 import Location from '../../../models/location'
 import {connectToDatabase} from '../../../lib/mongodb'
+import { getServerSession } from "next-auth";
+import {authOptions} from '../auth/[...nextauth]/route'
 
 export async function POST(req){
 
     try{
+        const session = await getServerSession(authOptions);
+
+        if (!session || !session.user) {
+            return new Response(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
+        }
+
+        const userEmail = session.user.email;
+        const userName = session.user.name;
+        
         const data = await req.json()
         console.log("999999999999999999999999")
         console.log(data)
@@ -15,7 +26,9 @@ export async function POST(req){
             location:{
                 lat:data.location.lat,
                 lng:data.location.lng
-            }
+            },
+            email:userEmail,
+            name:userName
         }
 
         connectToDatabase()
