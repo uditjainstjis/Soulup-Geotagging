@@ -30,6 +30,11 @@ export default function Home() {
 
 
     </div>
+    <p className="text-xs text-gray-500 text-center relative mt-[20vh] ">
+    By using this site, you agree to our <a href="/privacy-policy" target='_blank' className="underline">Privacy Policy</a>.
+    </p>
+
+
     </MainLocations.Provider>
 
   );

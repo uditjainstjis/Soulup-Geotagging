@@ -12,7 +12,7 @@ export async function GET(req){
             return NextResponse.json({ message: "Missing 'tag' parameter" }, { status: 400 });
         }
 
-        connectToDatabase();
+        await connectToDatabase();
         const locations = await Location.find({tag:tag})
         
         console.log("laoasdfa",locations)

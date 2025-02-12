@@ -83,7 +83,7 @@ const Select = () => {
 
 
     function handleFirstButton(){
-        setTimeout(()=>{setShow(true)},3000);
+        setTimeout(()=>{setShow(true)},1000);
         setisDisabled(true);
         setShowButton(false)
         //API Part
@@ -120,7 +120,7 @@ const Select = () => {
     useEffect(()=>{
         if(timeValue.trim()!==''){
 
-            setTimeout(()=>{setTellButton(true)},1450)
+            setTimeout(()=>{setTellButton(true)},450)
         } else {
             setTellButton(false);
         }
