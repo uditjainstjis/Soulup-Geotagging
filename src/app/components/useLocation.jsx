@@ -2,10 +2,11 @@
 import { useEffect, useState, useContext } from "react";
 import axios from 'axios'
 
-export function GetUserLocation() {
-  const [location, setLocation] = useState(null);
+
+export function useUserLocation() {
+  const [location, setLocation] = useState();
   const [error, setError] = useState(null);
-  const [locationRecieved, setLocationRecieved] = useState(true);
+  const [locationRecieved, setLocationRecieved] = useState(false);
   const [city, setCity] = useState()
 
   useEffect(() => {
@@ -48,11 +49,26 @@ export function GetUserLocation() {
     }
   }, []);
 
-  return (
-    <>
-    {locationRecieved?(<></>) : (<div className="p-1 ml-2 mr-2 h-16 flex items-center bg-red-100 rounded border-2 text-lg border-red-600"><h2 className="text-red-500 font-bold">Allow location's from browser setting's to see people facing same issue nearby you!</h2></div>)}
-    </>
-  );
+  return {locationRecieved, location, city}
+
+  // return (
+  //   <>
+  //   {locationRecieved?(<></>) : (<div className="p-1 ml-2 mr-2 h-16 flex items-center bg-red-100 rounded border-2 text-lg border-red-600"><h2 className="text-red-500 font-bold">Allow location's from browser setting's to see people facing same issue nearby you!</h2></div>)}
+  //   </>
+  // );
 }
 
-export default GetUserLocation;
+export function ShowDidWeGotUserLocation(){
+  const {location, locationRecieved, city} = useUserLocation();
+
+  if(locationRecieved){
+    return(<></>)
+  }else{
+    return(<div className="p-1 ml-2 mr-2 h-16 flex items-center bg-red-100 rounded border-2 text-lg border-red-600"><h2 className="text-red-500 font-bold">Allow location's from browser setting's to see people facing same issue nearby you!</h2></div>)
+  }
+}
+
+
+
+
+export default (ShowDidWeGotUserLocation, useUserLocation);
