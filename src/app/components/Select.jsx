@@ -1,11 +1,14 @@
 "use client"
-import React,{useEffect, useState} from 'react'
+import React,{useContext, useEffect, useState} from 'react'
 import { useUserLocation } from './useLocation';
-import TimeDropDown from './TimeDropdown'
+import TimeDropdown from './TimeDropdown'
 import Buttons from './buttons'
 import SelectDropdown from './SelectDropdown'
+import { MainLocations } from './contexts';
 
 const Select = () => {
+    var {Locs, setLocs} = useContext(MainLocations)
+
     const[showButton,setShowButton]=useState(false);
 
     const[tellButton,setTellButton]=useState('');
@@ -20,12 +23,12 @@ const Select = () => {
     function handleTellPeople(){
 
         const sendingBody = {
-            location:location,
             city:city,
             tag:optionValue,
-            time:timeValue
+            time:timeValue,
+            location:{lat:location.latitude, lng:location.longitude},
         }
-
+        console.log("I am sending this", sendingBody)
         if(timeValue.trim()!==''){
             if(locationRecieved){
                 fetch('/api/addOurTag',{
@@ -35,7 +38,9 @@ const Select = () => {
                     }
                     ,
                     body:JSON.stringify(sendingBody)
-                }).then(response=>response.json()).then(data=>console.log("bheja tag add krne ko", data)).catch((err)=>{console.log("ni bhejpaya",err)})
+                }).then(response=>response.json())
+                  .then(data=>console.log("bheja tag add krne ko", data))
+                  .catch((err)=>{console.log("ni bhejpaya",err)})
             }else{
                 alert("Cannot proceed, Allow Location from the setting's of the browser")
             }
@@ -56,7 +61,7 @@ const Select = () => {
             fetch(`api/Search-People-With-Same-Issue?tag=${encodedTag}`,{method:'GET'})
             .then(response=>{
                 if(response.ok){
-                    return response.json().then(data =>console.log("log data acc to tag",data))
+                    return response.json().then(data =>{console.log("log data acc to tag",data); setLocs(data)})
                 }else{
                     return response.json();
                 }

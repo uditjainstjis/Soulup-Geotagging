@@ -1,13 +1,18 @@
 "use client";
 // import { use } from 'react';
-import React, { useEffect, useContext } from 'react';
+import React, {useState, useEffect, useContext } from 'react';
 import MapComp from './components/MapComp'
 import Select from './components/Select'
+import sampleLocations from './components/sampleLocations'
 import {ShowDidWeGotUserLocation} from './components/useLocation'
+import { MainLocations } from './components/contexts';
 
 export default function Home() {
+  const [Locs, setLocs] = useState(sampleLocations)
 
   return (
+    <MainLocations.Provider value={{Locs, setLocs}}>
+
     <div className='mt-2 flex flex-col lg:flex-row'>
 
       <div className='flex flex-col sm:ml-0 mb-4 md:ml-[5vw]  md:items-start items-center justify-center'>
@@ -25,5 +30,7 @@ export default function Home() {
 
 
     </div>
+    </MainLocations.Provider>
+
   );
 }
