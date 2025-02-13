@@ -5,13 +5,16 @@ import MapComp from './components/MapComp'
 import Select from './components/Select'
 import sampleLocations from './components/sampleLocations'
 import {ShowDidWeGotUserLocation} from './components/useLocation'
-import { MainLocations } from './components/contexts';
+import { MainLocations, ZoomLocations } from './components/contexts';
 
 export default function Home() {
   const [Locs, setLocs] = useState(sampleLocations)
+  const [ZoomLocs, setZoomLocs] = useState({ lat: 23.6138954, lng: 87.2090057 })
+  const [Zoom, setZoom] = useState(6)
 
   return (
     <MainLocations.Provider value={{Locs, setLocs}}>
+      <ZoomLocations.Provider value = {{ZoomLocs, setZoomLocs, Zoom, setZoom}}>
 
     <div className='mt-2 flex flex-col lg:flex-row'>
 
@@ -34,7 +37,7 @@ export default function Home() {
     By using this site, you agree to our <a href="/privacy-policy" target='_blank' className="underline">Privacy Policy</a>.
     </p>
 
-
+    </ZoomLocations.Provider>
     </MainLocations.Provider>
 
   );

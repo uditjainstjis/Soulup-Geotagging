@@ -6,12 +6,17 @@ import { APIProvider, Map } from '@vis.gl/react-google-maps';
 import { useRouter } from 'next/navigation'
 //custom PoiMarkers Imported
 import PoiMarkers from './PoiMarkers'
-import {MainLocations} from './contexts'
+import {MainLocations, ZoomLocations} from './contexts'
+import { useUserLocation } from './useLocation';
 
 
 const MapComp = () => {
   var {Locs, setLocs} = useContext(MainLocations)
-  // const [locations, setLocation] = useState(Locs);
+  var {ZoomLocs, setZoomLocs} = useContext(ZoomLocations)
+  var {Zoom, setZoom} = useContext(ZoomLocations)
+  
+
+
   const [error, setError] = useState(null);
   const router = useRouter()
 
@@ -46,8 +51,8 @@ const MapComp = () => {
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY} >
       <Map
         // style={{ width: '60vw', height: '60vh'}}
-        defaultCenter={{ lat: 23.6138954, lng: 77.2090057 }}
-        defaultZoom={5}
+        defaultCenter={ZoomLocs}
+        defaultZoom={Zoom}
         gestureHandling={'greedy'}
         mapId={'6d4a78bd07042b18'}
 

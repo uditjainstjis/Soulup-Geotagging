@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useContext } from "react";
 import axios from 'axios'
+import { ZoomLocations } from './contexts';
 
 
 export function useUserLocation() {
@@ -8,6 +9,8 @@ export function useUserLocation() {
   const [error, setError] = useState(null);
   const [locationRecieved, setLocationRecieved] = useState(true);
   const [city, setCity] = useState()
+  var {ZoomLocs, setZoomLocs, Zoom, setZoom} = useContext(ZoomLocations)
+
 
   useEffect(() => {
     if ("geolocation" in navigator) {
@@ -22,6 +25,10 @@ export function useUserLocation() {
           console.log("Geolocation API Location:", geoLocation);
           setLocationRecieved(true)
           setLocation(geoLocation);
+          setZoomLocs({lat:position.coords.latitude, lng:position.coords.longitude})
+          setZoom(11)
+
+
 
           const sendingCoords = axios.post('/api/FindCity', geoLocation).then((res) => {
             console.log(res.data)

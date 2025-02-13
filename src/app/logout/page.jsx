@@ -22,7 +22,7 @@ export default function Component() {
         {session ? (
           <button 
             onClick={() => signOut()} 
-            className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600"
+            className="w-full hover:cursor-pointer bg-red-500 text-white py-2 rounded hover:bg-red-600"
           >
             Sign Out
           </button>

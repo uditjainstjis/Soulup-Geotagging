@@ -4,7 +4,7 @@ import { useUserLocation } from './useLocation';
 import TimeDropdown from './TimeDropdown'
 import Buttons from './buttons'
 import SelectDropdown from './SelectDropdown'
-import { MainLocations } from './contexts';
+import { MainLocations, ZoomLocations } from './contexts';
 
 
 
@@ -17,7 +17,7 @@ const Select = () => {
     const[showButton,setShowButton]=useState(false);
 
     const[tellButton,setTellButton]=useState('');
-    const[showAgeGender, setShowAgeGender] = useState(false);
+    // const[showAgeGender, setShowAgeGender] = useState(false);
     const[show,setShow]=useState(false);
 
     const [isDisabled, setisDisabled] = useState(false);
@@ -28,6 +28,7 @@ const Select = () => {
     const[genderValue, setGenderValue]=useState('')
 
     const {location, locationRecieved, city} = useUserLocation();
+
     function handleTellPeople(){
 
 
@@ -92,7 +93,8 @@ const Select = () => {
         // setShowAgeGender(true);
         //API Part
         const encodedTag = encodeURIComponent(optionValue)
-        if(optionValue.trim()!=='' && genderValue.trim()!=='' && ageValue.trim()!==''){
+        if(optionValue.trim()!==''){
+        // if(optionValue.trim()!=='' && genderValue.trim()!=='' && ageValue.trim()!==''){
 
             searchPeopleWithSameIssue(encodedTag, setLocs)
 
@@ -115,7 +117,7 @@ const Select = () => {
     useEffect(()=>{
         if(optionValue.trim()!==''){
             setShowButton(true)
-            setShowAgeGender(true)
+            // setShowAgeGender(true)
         } else {  
             setShowButton(false);
         }
@@ -149,7 +151,7 @@ const Select = () => {
             
             {show && <TimeDropdown timeValue={timeValue} setTimeValue={setTimeValue} />}
 
-            {showAgeGender &&
+            {/* {showAgeGender &&
 
             <div className='flex justify-around'>
 
@@ -181,7 +183,7 @@ const Select = () => {
                 </select>
 
                 </div>
-            }
+            } */}
 
 
             <Buttons

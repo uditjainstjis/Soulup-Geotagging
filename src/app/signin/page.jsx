@@ -34,7 +34,7 @@ export default function Component() {
             <button
               onClick={handleSignIn} // Call the custom function
               disabled={!agreed}       // Disable if not agreed
-              className={`w-full py-2 rounded ${agreed ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-400 text-gray-600 cursor-not-allowed"}`} // Conditional styling
+              className={`w-full py-2  hover:cursor-pointer rounded ${agreed ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-400 text-gray-600 cursor-not-allowed"}`} // Conditional styling
             >
               Sign In
             </button>
