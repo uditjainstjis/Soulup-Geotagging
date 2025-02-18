@@ -16,13 +16,13 @@ export const authOptions = {
     },
     secret: process.env.NEXTAUTH_SECRET, // Redundant, but keeping for compatibility
     callbacks: {
-        async jwt({ token, account, profile }) { // Added `account` and `profile`
+        async jwt({ token, account }) { // Added `account` and `profile`
             if (account) {
                 token.accessToken = account.access_token
             }
             return token
         },
-        async session({ session, token, user }) { // Added `user` parameter
+        async session({ session, token }) { // Added `user` parameter
             session.accessToken = token.accessToken
             return session
         }
