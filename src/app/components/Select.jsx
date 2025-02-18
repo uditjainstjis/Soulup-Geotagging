@@ -6,32 +6,21 @@ import Buttons from './buttons'
 import SelectDropdown from './SelectDropdown'
 import { MainLocations, ZoomLocations } from './contexts';
 
-
-
-// Usage example:
-// searchPeopleWithSameIssue(encodedTag, setLocs);
-
 const Select = () => {
     var {Locs, setLocs} = useContext(MainLocations)
 
     const[showButton,setShowButton]=useState(false);
-
     const[tellButton,setTellButton]=useState('');
-    // const[showAgeGender, setShowAgeGender] = useState(false);
     const[show,setShow]=useState(false);
-
     const [isDisabled, setisDisabled] = useState(false);
 
     const[optionValue, setOptionValue]=useState('')
     const[timeValue, setTimeValue]=useState('')
-    const[ageValue, setAgeValue]=useState('')
-    const[genderValue, setGenderValue]=useState('')
+
 
     const {location, locationRecieved, city} = useUserLocation();
 
     function handleTellPeople(){
-
-
         const sendingBody = {
             city:city,
             tag:optionValue,
@@ -67,8 +56,8 @@ const Select = () => {
     async function searchPeopleWithSameIssue(encodedTag, setLocs) {
         try {
 
-            const response = await fetch(`api/Search-People-With-Same-Issue?tag=${encodedTag}&city=${city}&age=${ageValue}&gender=${genderValue}`, { method: 'GET' });
-            
+            const response = await fetch(`api/Search-People-With-Same-Issue?tag=${encodedTag}&city=${city}`, { method: 'GET' });
+
             if (response.ok) {
                 const data = await response.json();
                 console.log("log data acc to tag", data);
@@ -90,35 +79,20 @@ const Select = () => {
         setTimeout(()=>{setShow(true)},1000);
         setisDisabled(true);
         setShowButton(false)
-        // setShowAgeGender(true);
         //API Part
         const encodedTag = encodeURIComponent(optionValue)
         if(optionValue.trim()!==''){
-        // if(optionValue.trim()!=='' && genderValue.trim()!=='' && ageValue.trim()!==''){
-
             searchPeopleWithSameIssue(encodedTag, setLocs)
-
         }else{
             alert("Select some option to Search for that")
         }
 
     }
 
-    function handleChange(event){    
-        setOptionValue(event.target.value);
-        console.log("Selected value:", event.target.value);
-    }
-    function handleTimeChange(event){    
-        setTimeValue(event.target.value);
-        console.log("Selected value:", event.target.value);
-    }
-
-
     useEffect(()=>{
         if(optionValue.trim()!==''){
             setShowButton(true)
-            // setShowAgeGender(true)
-        } else {  
+        } else {
             setShowButton(false);
         }
 
@@ -134,68 +108,27 @@ const Select = () => {
     },[timeValue])
 
     return (
-        <div className='bg-white border-2 border-gray-400 rounded-lg py-8 px-5 min-h-56'>
-
-            {(<h4 className='bg-white text-black rounded-full p-3 px-5 relative' style={{ boxShadow: '0 -4px 8px #ede9c7, -2px -2px 4px #dec5e0, 2px -2px 4px #ede9c7, 0 4px 8px #d1e0c5' }}>
+        <div className='bg-white rounded-2xl shadow-lg p-6 w-full'> {/* Modernized styling */}
+            <h4 className='text-lg font-semibold text-gray-800 mb-4 text-center'> {/* Improved typography */}
                 What are you facing currently?
-            </h4>)}
+            </h4>
 
-
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-4"> {/* Added gap for spacing */}
                 <SelectDropdown
                     optionValue={optionValue}
                     setOptionValue={setOptionValue}
                     isDisabled={isDisabled}
                 />
 
-            
-            {show && <TimeDropdown timeValue={timeValue} setTimeValue={setTimeValue} />}
+                {show && <TimeDropdown timeValue={timeValue} setTimeValue={setTimeValue} />}
 
-            {/* {showAgeGender &&
-
-            <div className='flex justify-around'>
-
-            <select
-                    value={ageValue}
-                    onChange={(e) => setAgeValue(e.target.value)}
-                    className="appearance-none w-fit  px-2  mt-6 bg-white border border-gray-300 text-gray-700 py-3 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                >
-                    <option value="" disabled>
-                        What's your age?
-                    </option>
-                    <option value="less than 18">less than 18</option>
-                    <option value="between 18 to 30">between 18-30</option>
-                    <option value="between 30-45">between 30-45</option>
-                    <option value="between 45-60">between 45-60</option>
-                    <option value="more than 60">more than 60</option>
-                </select>
-            <select
-                    value={genderValue}
-                    onChange={(e) => setGenderValue(e.target.value)}
-                    className="appearance-none w-fit  px-2  mt-6 bg-white border border-gray-300 text-gray-700 py-3 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                >
-                    <option value="" disabled>
-                        Gender ?
-                    </option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-
-                </div>
-            } */}
-
-
-            <Buttons
+                <Buttons
                     showButton={showButton}
                     tellButton={tellButton}
                     handleFirstButton={handleFirstButton}
                     handleTellPeople={handleTellPeople}
                 />
-
-
             </div>
-
         </div>
     )
 }

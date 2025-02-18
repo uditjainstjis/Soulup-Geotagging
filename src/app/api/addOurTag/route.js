@@ -1,8 +1,10 @@
+// src/app/api/addOurTag/route.js
 import { NextResponse } from "next/server";
 import Location from '../../../models/location'
 import {connectToDatabase} from '../../../lib/mongodb'
 import { getServerSession } from "next-auth";
-import {authOptions} from '../auth/[...nextauth]/route'
+import { authOptions } from "../../../lib/auth.config";  // Adjust the path as necessary
+
 
 export async function POST(req){
 
@@ -15,7 +17,7 @@ export async function POST(req){
 
         const userEmail = session.user.email;
         const userName = session.user.name;
-        
+
         const data = await req.json()
         console.log("999999999999999999999999")
         console.log(data)
@@ -46,4 +48,3 @@ export async function POST(req){
         return NextResponse.json({message:"we got some error at server",error:err}, {status:501})
     }
 }
-

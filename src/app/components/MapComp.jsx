@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useEffect, useState, useContext } from 'react';
 import React,{useCallback} from 'react';
@@ -14,13 +14,12 @@ const MapComp = () => {
   var {Locs, setLocs} = useContext(MainLocations)
   var {ZoomLocs, setZoomLocs} = useContext(ZoomLocations)
   var {Zoom, setZoom} = useContext(ZoomLocations)
-  
 
 
   const [error, setError] = useState(null);
   const router = useRouter()
 
-  useEffect(() => { 
+  useEffect(() => {
     async function getLocations() {
       try {
         const res = await fetch("/api/Loc"); // Calls Next.js API route
@@ -64,4 +63,3 @@ const MapComp = () => {
 };
 
 export default MapComp;
-

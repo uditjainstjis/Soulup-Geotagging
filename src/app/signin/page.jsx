@@ -1,22 +1,27 @@
 "use client"
 import { useSession, signIn, signOut } from "next-auth/react";
-import { redirect } from "next/navigation";
-import { useState } from "react"; // Import useState
+import { useRouter } from 'next/navigation'; // Import useRouter
+import { useState, useEffect } from "react"; // Import useState and useEffect
 
-export default function Component() {
-  const { data: session } = useSession();
+export default function SignInPage() {
+  const { data: session, status } = useSession();
   const [agreed, setAgreed] = useState(false); // State for checkbox
+  const router = useRouter(); // Initialize useRouter
 
-  if (session) {
-    redirect("/");
-  }
-
-  const handleSignIn = () => {
-    if (agreed) {
-      signIn();
-    } else {
-      alert("Please agree to the Privacy Policy to continue."); // Or a better message
+  useEffect(() => {
+    if (session) {
+      router.push('/'); // Use router.push for redirection
     }
+  }, [session, router]); // Dependency array includes session and router
+
+  const handleSignIn = (e) => {
+        e.preventDefault(); // Prevent default form submission
+
+        if (agreed) {
+          signIn('google'); // Specify the provider ('google')
+        } else {
+          alert("Please agree to the Privacy Policy to continue."); // Or a better message
+        }
   };
 
   return (
@@ -30,22 +35,22 @@ export default function Component() {
         </p>
 
         {!session && ( // Only show sign-in related elements when not signed in
-          <>
+          <form onSubmit={handleSignIn}> {/* Wrap the form with onSubmit */}
             <button
-              onClick={handleSignIn} // Call the custom function
-              disabled={!agreed}       // Disable if not agreed
-              className={`w-full py-2  hover:cursor-pointer rounded ${agreed ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-400 text-gray-600 cursor-not-allowed"}`} // Conditional styling
+              type="submit" // Use type="submit" for form submission
+              disabled={!agreed}
+              className={`w-full py-2 hover:cursor-pointer rounded ${agreed ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-400 text-gray-600 cursor-not-allowed"}`}
             >
-              Sign In
+              Sign In with Google
             </button>
 
-            <div className="mt-4 flex items-center justify-center"> {/* Centered checkbox */}
+            <div className="mt-4 flex items-center justify-center">
               <input
                 type="checkbox"
                 id="privacyCheckbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                className="mr-2" // Add some space
+                className="mr-2"
               />
               <label htmlFor="privacyCheckbox" className="text-sm">
                 By signing in, you agree to our{" "}
@@ -55,7 +60,7 @@ export default function Component() {
                 .
               </label>
             </div>
-          </>
+          </form>
         )}
 
         {session && (

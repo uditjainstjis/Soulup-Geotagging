@@ -2,11 +2,11 @@ import React from 'react'
 
 export const TimeDropdown = ({timeValue, setTimeValue}) => {
   return (
-    <div className="animate-fade-in relative inline-block w-[75vw] sm:w-[50vw] md:w-[70vw] mt-9 lg:w-72 rounded-2xl mx-auto">
+    <div className="relative animate-fade-in"> {/* Removed inline-block, using relative for positioning */}
     <select
         value={timeValue}
         onChange={(e) => setTimeValue(e.target.value)}
-        className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 sm:pr-8 pr-4 lg:pr-4 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+        className="block w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
     >
         <option value="" disabled>
             When did you face this?
@@ -16,6 +16,9 @@ export const TimeDropdown = ({timeValue, setTimeValue}) => {
         <option value="3 days ago">3 days ago</option>
         <option value="This week">This week</option>
     </select>
+    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+    </div>
     </div>
   )
 }
