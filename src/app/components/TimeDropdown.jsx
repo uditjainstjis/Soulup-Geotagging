@@ -1,62 +1,94 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { MainLocations } from "./contexts";
 
-export const TimeDropdown = ({ timeValue, setTimeValue, availableOptions = [] , originalLocs}) => { 
-  const { Locs, setLocs } = useContext(MainLocations);
+const TimeDropdown = ({ timeValue, setTimeValue, originalLocs }) => {
+  const { setLocs } = useContext(MainLocations);
 
-  function handleTimeChange(e) {
+  const timeRanges = useMemo(() => [
+    { label: "Last 6 hours", hours: 6 },
+    { label: "Last 12 hours", hours: 12 },
+    { label: "Last 24 hours", hours: 24 },
+    { label: "Last Week", hours: 168 },
+  ], []);
+
+  const availableOptions = useMemo(() => {
+    if (!originalLocs || originalLocs.length === 0) {
+      return []; // No options if no locations
+    }
+
+    const now = new Date();
+
+    const validRanges = timeRanges.filter(({ hours }) => {
+      const filteredLocs = originalLocs.filter(loc => {
+        if (!loc.time) return false;
+        const tagTime = new Date(loc.time);
+        const diffHours = (now - tagTime) / (1000 * 60 * 60);
+        return diffHours <= hours;
+      });
+      return filteredLocs.length >= 5;
+    }).map(range => range.label);
+
+    if (validRanges.length === 0 && originalLocs.length > 0) {
+      return ["Show All"];  // Only "Show All" if *some* data exists
+    }
+
+    return [...validRanges, "Show All"]; // Add "Show All" if any ranges are valid
+  }, [originalLocs, timeRanges]); // Dependency on timeRanges too
+
+  const handleTimeChange = (e) => {
     const selectedTime = e.target.value;
     setTimeValue(selectedTime);
 
     if (selectedTime === "Show All") {
-        setLocs(originalLocs); // Reset to full dataset
-        return;
+      setLocs(originalLocs);
+      return;
     }
 
-    // Filter locations based on selected time
+    const now = new Date();
+
     const filteredLocs = originalLocs.filter(loc => {
-        if (!loc.time) return false; // Skip if loc.time is missing
+      if (!loc.time) return false;
 
-        const timeDiff = new Date() - new Date(loc.time);
-        const hours = timeDiff / (1000 * 60 * 60); // Convert to hours
+      const tagTime = new Date(loc.time);
+      const diffHours = (now - tagTime) / (1000 * 60 * 60);
 
-        if (selectedTime === "Last 6 hours") return hours <= 6;
-        if (selectedTime === "Last 12 hours") return hours <= 12;
-        if (selectedTime === "Last 24 hours") return hours <= 24;
-        if (selectedTime === "Last Week") return hours <= 168;
-
-        return true;
+      const selectedRange = timeRanges.find(range => range.label === selectedTime);
+      return selectedRange && diffHours <= selectedRange.hours;
     });
 
     setLocs(filteredLocs);
-}
-
+  };
 
   return (
     <div className="relative animate-fade-in">
-      <select
-        value={timeValue}
-        onChange={handleTimeChange}
-        className="block w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
-      >
-
-        {availableOptions.length > 0 ? (
-          availableOptions.map((time) => (
+      {availableOptions.length > 0 ? (
+        <select
+          value={timeValue}
+          onChange={handleTimeChange}
+          className="block w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
+        >
+          {availableOptions.map(time => (
             <option key={time} value={time}>
               {time}
             </option>
-          ))
-        ) : (
-          <option value="" disabled>
-            No valid time options available
-          </option>
-        )}
-      </select>
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-          <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-        </svg>
-      </div>
+          ))}
+        </select>
+      ) : (
+        <button
+          className="block w-full bg-gray-300 text-gray-600 py-3 px-4 rounded-xl cursor-not-allowed"
+          disabled
+        >
+          Nobody Found
+        </button>
+      )}
+
+      {availableOptions.length > 0 && (
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+          </svg>
+        </div>
+      )}
     </div>
   );
 };
