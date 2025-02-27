@@ -16,7 +16,7 @@ export async function POST(req){
         }
 
         const google_api = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY_NO_RESTRICTION;
-        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${google_api}`;
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&region=in&key=${google_api}`;
 
 
     // Iterate over results and address_components to find the district
@@ -24,9 +24,18 @@ export async function POST(req){
 
         const response = await axios.get(url);
         const data = response.data;
-        // console.log(data);
+        console.log("lele")
+        console.log("lele")
+        console.log("lele")
+        console.log("lele")
+        console.log("lele")
+        console.log("lele")
+        console.log("lele")
+        console.log("lele")
+        console.log("lele")
+        console.log(data.results[2]);
 
-        const District = data.results[0].address_components[2].long_name
+        const District = data.results[0].address_components[3].long_name
         // const District = data
         console.log(District)
 

@@ -26,7 +26,7 @@ export function useUserLocation() {
           setLocationRecieved(true)
           setLocation(geoLocation);
           setZoomLocs({lat:position.coords.latitude, lng:position.coords.longitude})
-          setZoom(11)
+          setZoom(13)
 
 
 
