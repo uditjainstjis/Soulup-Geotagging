@@ -18,12 +18,23 @@ const TimeDropdown = ({ timeValue, setTimeValue, originalLocs }) => {
 
     const now = new Date();
 
-    const validRanges = timeRanges.filter(({ hours }) => {
+    const validRanges = timeRanges.filter(({ label, hours }) => {
+      // Count tags *exclusively* within this time range
       const filteredLocs = originalLocs.filter(loc => {
         if (!loc.time) return false;
         const tagTime = new Date(loc.time);
         const diffHours = (now - tagTime) / (1000 * 60 * 60);
-        return diffHours <= hours;
+
+        // Check if within the current range *and* not in a shorter range
+        let isExclusive = true;
+        for (const shorterRange of timeRanges) {
+          if (shorterRange.hours < hours && diffHours <= shorterRange.hours) {
+            isExclusive = false;
+            break; // Tag is in a shorter range, so not exclusive
+          }
+        }
+
+        return diffHours <= hours && isExclusive;
       });
       return filteredLocs.length >= 5;
     }).map(range => range.label);
@@ -33,7 +44,7 @@ const TimeDropdown = ({ timeValue, setTimeValue, originalLocs }) => {
     }
 
     return [...validRanges, "Show All"]; // Add "Show All" if any ranges are valid
-  }, [originalLocs, timeRanges]); // Dependency on timeRanges too
+  }, [originalLocs, timeRanges]);
 
   const handleTimeChange = (e) => {
     const selectedTime = e.target.value;
