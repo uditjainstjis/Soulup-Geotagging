@@ -9,7 +9,7 @@ import { MainLocations, ZoomLocations } from './components/contexts';
 
 export default function Home() {
   const [Locs, setLocs] = useState(sampleLocations)
-  const [ZoomLocs, setZoomLocs] = useState({ lat: 23.6138954, lng: 87.2090057 })
+  const [ZoomLocs, setZoomLocs] = useState({ lat: 23.86514681568587, lng: 78.45549903489808 })
   const [Zoom, setZoom] = useState(6)
 
   return (
