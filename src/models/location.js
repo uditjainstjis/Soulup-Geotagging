@@ -7,11 +7,14 @@ const LocationSchema = new mongoose.Schema({
   },
   city: { type: String, required: true },
   tag: { type: String, required: true },
-  time: { type: String, required: true },
+  time: { type: Date, required: true, default: Date.now },  // Changed to Date type
   email: { type: String, required: true },
-  name: { type: String},
+  name: { type: String },
 });
+
+// Ensure timestamps for sorting & querying
+LocationSchema.index({ time: 1 });
 
 const Location = mongoose.models.Location || mongoose.model('Location', LocationSchema);
 
-export default Location; 
+export default Location;
