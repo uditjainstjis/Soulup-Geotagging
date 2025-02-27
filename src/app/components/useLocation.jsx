@@ -13,6 +13,7 @@ export function useUserLocation() {
 
 
   useEffect(() => {
+    
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
