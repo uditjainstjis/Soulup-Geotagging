@@ -35,7 +35,7 @@ export async function POST(req){
         console.log("lele")
         console.log(data.results[2]);
 
-        const District = data.results[0].address_components[3].long_name
+        const District = data.results[0].address_components[2].long_name
         // const District = data
         console.log(District)
 

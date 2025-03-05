@@ -4,6 +4,7 @@ import TimeDropdown from "./TimeDropdown";
 import Buttons from "./buttons";
 import SelectDropdown from "./SelectDropdown";
 import { MainLocations } from "./contexts";
+import SurveyBox from "./SurveyBox"; // Import the new component
 
 const Select = () => {
     var { Locs, setLocs } = useContext(MainLocations);
@@ -14,9 +15,9 @@ const Select = () => {
     const [isDisabled, setisDisabled] = useState(false);
     const [optionValue, setOptionValue] = useState("");
     const [timeValue, setTimeValue] = useState("");
+    const [showSurvey, setShowSurvey] = useState(false); // Track survey visibility
 
     const { location, locationRecieved, city } = useUserLocation();
-
     const [originalLocs, setOriginalLocs] = useState([]); // Store unfiltered locations
 
     async function searchPeopleWithSameIssue(encodedTag, setLocs) {
@@ -32,7 +33,6 @@ const Select = () => {
     
                 setLocs(data);
                 setOriginalLocs(data); // Store the original full list for resetting
-                //categorizeTagsByTime(data);
             } else {
                 const errorData = await response.json();
                 console.error("Error response:", errorData);
@@ -43,52 +43,49 @@ const Select = () => {
         }
     }
     
-    
-
     function handleFirstButton() {
-        // setTimeout(() => {
-            setShow(true);
-        // }, 1000);
+        setShow(true);
         setisDisabled(true);
         setShowButton(false);
-        setTellButton(true)
+        setTellButton(true);
 
         const encodedTag = encodeURIComponent(optionValue);
         if (optionValue.trim() !== "") {
             searchPeopleWithSameIssue(encodedTag, setLocs);
+
+            // Show the survey box after 2 seconds
+            setTimeout(() => {
+                setShowSurvey(true);
+            }, 2000);
         } else {
             alert("Select some option to search for that");
         }
     }
 
-
     function handleTellPeople(){
         const sendingBody = {
-            city:city,
-            tag:optionValue,
-            location:{lat:location.latitude, lng:location.longitude},
+            city: city,
+            tag: optionValue,
+            location: { lat: location.latitude, lng: location.longitude },
+        };
+        const encodedTag = encodeURIComponent(optionValue);
+        console.log("I am sending this", sendingBody);
+
+        if (locationRecieved) {
+            fetch('/api/addOurTag', {
+                method: "POST",
+                headers: { "Content-Type": "application/JSON" },
+                body: JSON.stringify(sendingBody)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                searchPeopleWithSameIssue(encodedTag, setLocs);
+            })
+            .catch(err => { console.log("Failed to send data", err); });
+        } else {
+            alert("Cannot proceed, Allow Location from the settings of the browser");
         }
-        const encodedTag = encodeURIComponent(optionValue)
-        console.log("I am sending this", sendingBody)
-
-            if(locationRecieved){
-                fetch('/api/addOurTag',{
-                    method:"POST",
-                    headers:{
-                        "Content-Type":"application/JSON"
-                    }
-                    ,
-                    body:JSON.stringify(sendingBody)
-                }).then(response=>response.json())
-                  .then(data=>{
-                    alert(data.message)
-                    searchPeopleWithSameIssue(encodedTag, setLocs)
-                })
-                  .catch((err)=>{console.log("ni bhejpaya",err)})
-            }else{
-                alert("Cannot proceed, Allow Location from the setting's of the browser")
-            }
-
     }
 
     useEffect(() => {
@@ -106,7 +103,8 @@ const Select = () => {
     }, [timeValue]);
 
     return (
-        <div className="bg-white rounded-2xl shadow-lg p-6 w-full">
+
+        <div className="bg-white rounded-2xl shadow-lg p-6 w-full mt-16">
             <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">
                 What are you facing currently?
             </h4>
@@ -124,7 +122,6 @@ const Select = () => {
                         setTimeValue={setTimeValue}
                         originalLocs={originalLocs} // Pass the original data
                     />
-
                 )}
 
                 <Buttons
@@ -134,7 +131,14 @@ const Select = () => {
                     handleTellPeople={handleTellPeople}
                 />
             </div>
+
+        <div className="bg-white rounded-2xl shadow-lg w-full mt-6 ">
+            {showSurvey && <SurveyBox onClose={() => setShowSurvey(false)} />}
         </div>
+            {/* Show Survey Box separately when triggered */}
+        </div>
+
+
     );
 };
 
