@@ -38,7 +38,7 @@ const AdminSurveyPanel = () => {
           setPrevDisplay(data.display);
         }
       } catch (error) {
-        setError("Failed to fetch survey question");
+        setError(`Failed to fetch survey question ${error}`);
       } finally {
         setLoading(false);
       }
