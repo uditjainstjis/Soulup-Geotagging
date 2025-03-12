@@ -29,7 +29,7 @@ const AdminSurveyPanel = () => {
     if (!authenticated) return;
     async function fetchSurveyQuestion() {
       try {
-        const res = await fetch("/api/surveyQuestion");
+        const res = await fetch("/api/surveyQuestion2");
         const data = await res.json();
         if (res.ok) {
           setQuestion(data.question);
