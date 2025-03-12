@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongodb';
 import SurveyQuestion from '../../../models/surveyQuestion';
-import SurveyResponse from '../../../models/surveyResponse'; // Import SurveyResponse model
 import { getServerSession } from "next-auth/next";
 
 export async function GET(req) {
