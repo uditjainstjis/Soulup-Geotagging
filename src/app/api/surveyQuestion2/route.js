@@ -21,23 +21,23 @@ export async function GET(req) {
         }
 
         await connectToDatabase();
+        console.log("Database connection successful.");
 
+        const query = { display: true };
+        console.log("Query:", query);  // Log the actual query being executed
 
-        const surveyQuestion = await SurveyQuestion.findOne({ display: true });
+        const surveyQuestion = await SurveyQuestion.findOne(query);
+        console.log("Survey Question from DB:", surveyQuestion); // Log what the query returns
 
-        if (!surveyQuestion) {
+        if (surveyQuestion === null) {
+            console.log("No survey question found with display: true");
             return NextResponse.json(
-                { error: 'No survey question found' },
-                {
-                    status: 404,
-                    headers: {
-                        'Cache-Control': 'no-cache'
-                    }
-                }
+                { question: 'No survey question found', display: false }
             );
         }
-        console.log(surveyQuestion);
+        console.log("Survey Question found:", surveyQuestion);
         return NextResponse.json(surveyQuestion);
+
     } catch (error) {
         console.error("Error fetching survey question:", error);
         return NextResponse.json(

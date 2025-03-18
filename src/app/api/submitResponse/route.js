@@ -34,7 +34,7 @@ export async function POST(req) {
 
         await connectToDatabase();
 
-        const { question, answer } = await req.json();
+        const { question, answer, tags } = await req.json();
 
 
         if (!question || !answer) {
@@ -45,6 +45,7 @@ export async function POST(req) {
             email: userEmail,
             question: question,
             response: answer,
+            possibleTags: tags,
         });
 
         console.log("SurveyResponse object before save:", newSurveyResponse); // ADD THIS LINE

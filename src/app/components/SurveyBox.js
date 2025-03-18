@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 const SurveyBox = ({ onClose }) => {
     const [question, setQuestion] = useState(null);
+    const [tags, setTags] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -26,6 +27,7 @@ const SurveyBox = ({ onClose }) => {
                 if (data && data.display) {
                     console.log("Survey question is displayed:", data.question);
                     setQuestion(data.question);
+                    setTags(data.possibleTags);
                 } else {
                     console.log("Survey question is not displayed (display is false or no question in DB).");
                 }
@@ -45,7 +47,7 @@ const SurveyBox = ({ onClose }) => {
             const res = await fetch("/api/submitResponse", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ question, answer }),
+                body: JSON.stringify({ question, answer , tags}),
             });
 
             if (!res.ok) {
