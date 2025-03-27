@@ -7,7 +7,8 @@ import { useRouter } from 'next/navigation'
 //custom PoiMarkers Imported
 import PoiMarkers from './PoiMarkers'
 import {MainLocations, ZoomLocations} from './contexts'
-import { useUserLocation } from './useLocation';
+import { useUserLocation } from './useLocation'
+import UserDetailsForm from '../components/UserDetailsForm';
 
 
 const MapComp = () => {
@@ -20,12 +21,28 @@ const MapComp = () => {
   const router = useRouter()
 
   useEffect(() => {
+    async function checkdetails(){
+    const check = await fetch('/api/userdetails')
+    const userDetails = await check.json();
+    if(!userDetails.gender){
+      
+      router.push('details')
+    }
+  }
+  checkdetails()
+  }, [])
+
+
+  useEffect(() => {
     async function getLocations() {
       try {
         const res = await fetch("/api/Loc"); // Calls Next.js API route
+
         const data = await res.json();
         if (res.ok) {
           setLocs(data)
+          // console.log("data from server to plot locations", data
+
           // console.log(Locs)
           console.log("data from server to plot locations", data)
 

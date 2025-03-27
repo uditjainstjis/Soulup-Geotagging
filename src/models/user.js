@@ -5,6 +5,8 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   profilePhoto: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
+  gender: { type: String }, // Add gender field
+  ageBracket: { type: String }, // Add ageBracket field
 });
 
 const User = mongoose.models.User || mongoose.model('User', UserSchema);

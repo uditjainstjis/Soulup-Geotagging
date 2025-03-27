@@ -3,10 +3,12 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from 'next/navigation'; // Import useRouter
 import { useState, useEffect } from "react"; // Import useState and useEffect
 
-export default function SignInPage() {
+export default  function SignInPage() {
   const { data: session, status } = useSession();
   const [agreed, setAgreed] = useState(false); // State for checkbox
   const router = useRouter(); // Initialize useRouter
+  
+
 
   useEffect(() => {
     if (session) {
