@@ -19,6 +19,8 @@ const MapComp = () => {
   const router = useRouter();
 
   useEffect(() => {
+    let redirected = false;
+    
     async function getLocations() {
       try {
         const res = await fetch("/api/Loc"); // Calls Next.js API route
@@ -29,6 +31,7 @@ const MapComp = () => {
         } else {
           if (res.status == 401) {
             router.push('/signin');
+            redirected = true;
             return; // Prevent further execution
           } else {
             throw new Error("Failed to fetch location", res);
@@ -41,17 +44,16 @@ const MapComp = () => {
     }
     
     async function checkDetails() {
+      if (redirected) return; // Prevent execution if redirected to /signin
       const check = await fetch('/api/userdetails');
       const userDetails = await check.json();
       if (!userDetails.gender) {
-        router.push('details');
+        router.push('/details');
       }
     }
     
     getLocations().then(() => {
-      if (window.location.pathname !== '/signin') {
-        checkDetails();
-      }
+      checkDetails();
     });
   }, []);
 
