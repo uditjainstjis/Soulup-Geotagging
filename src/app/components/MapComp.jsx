@@ -29,6 +29,7 @@ const MapComp = () => {
         } else {
           if (res.status == 401) {
             router.push('/signin');
+            return; // Prevent further execution
           } else {
             throw new Error("Failed to fetch location", res);
           }
@@ -38,15 +39,19 @@ const MapComp = () => {
         setError("Failed to fetch location");
       }
     }
-    getLocations().then(() => {
-      async function checkDetails() {
-        const check = await fetch('/api/userdetails');
-        const userDetails = await check.json();
-        if (!userDetails.gender) {
-          router.push('details');
-        }
+    
+    async function checkDetails() {
+      const check = await fetch('/api/userdetails');
+      const userDetails = await check.json();
+      if (!userDetails.gender) {
+        router.push('details');
       }
-      checkDetails();
+    }
+    
+    getLocations().then(() => {
+      if (window.location.pathname !== '/signin') {
+        checkDetails();
+      }
     });
   }, []);
 
