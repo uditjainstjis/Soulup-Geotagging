@@ -15,7 +15,6 @@ export async function POST(req) {
 
         const userEmail = session.user.email;
         const userName = session.user.name;
-        const userProfilePhoto = session.user.image; // Get user's profile image URL from session
 
         // Connect to DB
         await connectToDatabase();
