@@ -2,13 +2,11 @@ import { useState, useCallback } from "react";
 import {Circle} from './circle'
 import {AdvancedMarker, Pin, InfoWindow} from '@vis.gl/react-google-maps'
 import Image from 'next/image';
-import { useSession } from "next-auth/react";
 
 const PoiMarkers = ({ pois }) => {
     const [circleCenter, setCircleCenter] = useState(null)
     const [selectedPoi, setSelectedPoi] = useState(null)
     const [poiData, setPoiData] = useState({});
-    const { data: session } = useSession();
 
     const handleClick = useCallback((ev, poi) => {
         if(!ev.latLng) return;
@@ -72,7 +70,7 @@ const PoiMarkers = ({ pois }) => {
                         <div className="flex items-center mb-3 pb-3 border-b border-gray-200">
                             <div className="mr-3 rounded-full overflow-hidden w-11 h-11 relative">
                                 <Image
-                                    src={session?.user?.image || "/user.png"}
+                                    src={selectedPoi.profilePhoto || "/user.png"}
                                     alt={`${selectedPoi.name || 'Anonymous'} Profile`}
                                     width={44}
                                     height={44}

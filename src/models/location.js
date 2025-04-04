@@ -7,12 +7,13 @@ const LocationSchema = new mongoose.Schema({
   },
   city: { type: String, required: true },
   tag: { type: String, required: true },
-  time: { type: Date, required: true, default: Date.now },  // Changed to Date type
+  time: { type: Date, required: true, default: Date.now },
   email: { type: String, required: true },
   name: { type: String },
-  gender: { type: String }, // Add gender field - Optional
-  ageBracket: { type: String }, // Add ageBracket field - Optional
-  socialProfile: { type: String }, // Add socialProfile field - Optional
+  gender: { type: String },
+  ageBracket: { type: String },
+  socialProfile: { type: String },
+  profilePhoto: { type: String }, // Add profilePhoto field - String type, optional
 });
 
 // Ensure timestamps for sorting & querying

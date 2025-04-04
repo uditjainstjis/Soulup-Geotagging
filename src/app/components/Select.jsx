@@ -103,6 +103,7 @@ const Select = () => {
             gender: userDetailsData?.gender || null, // Include gender from fetched details
             ageBracket: userDetailsData?.ageBracket || null, // Include ageBracket from fetched details
             socialProfile: userDetailsData?.socialProfile || null, // Include socialProfile from fetched details
+            profilePhoto: session?.user?.image || null, // Include profilePhoto from session
         };
         const encodedTag = encodeURIComponent(optionValue);
         console.log("I am sending this", sendingBody);

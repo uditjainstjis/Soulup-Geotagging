@@ -15,6 +15,7 @@ export async function POST(req) {
 
         const userEmail = session.user.email;
         const userName = session.user.name;
+        const userProfilePhoto = session.user.image; // Get user's profile image URL from session
 
         // Connect to DB
         await connectToDatabase();
@@ -57,6 +58,7 @@ export async function POST(req) {
             gender: data.gender,       // Include gender from request
             ageBracket: data.ageBracket, // Include ageBracket from request
             socialProfile: data.socialProfile, // Include socialProfile from request
+            profilePhoto: data.profilePhoto, // Include profilePhoto from request - ADDED THIS LINE
         };
 
         // Save tag to the Location collection
