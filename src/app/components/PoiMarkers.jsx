@@ -128,6 +128,7 @@ const PoiMarkers = ({ pois }) => {
                     </div>
                 </InfoWindow>
             )}
+            
     </>
   );
 };
