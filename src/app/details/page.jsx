@@ -1,41 +1,106 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Use useRouter for app directory
+import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
 const DetailsPage = () => {
   const [gender, setGender] = useState('');
   const [ageBracket, setAgeBracket] = useState('');
+  const [socialProfile, setSocialProfile] = useState('');
+  const [socialProfileError, setSocialProfileError] = useState('');
   const router = useRouter();
-  const {data: session} = useSession();
+  const { data: session } = useSession();
+
+  const validateSocialProfile = (profileLink) => {
+    if (!profileLink) {
+      return ''; // Optional, so empty is valid
+    }
+
+    let urlToValidate = profileLink;
+
+    // Prepend https:// if no protocol is present to help URL parsing
+    if (!profileLink.startsWith('http://') && !profileLink.startsWith('https://')) {
+      urlToValidate = `https://${profileLink}`;
+    }
+
+    try {
+      const url = new URL(urlToValidate);
+      const hostname = url.hostname.toLowerCase(); // Get hostname and lowercase it
+      const commonDomains = [
+        'linkedin.com',
+        'instagram.com',
+        'facebook.com',
+        'twitter.com',
+        'x.com',
+        'tiktok.com',
+        'youtube.com',
+        'pinterest.com',
+        'threads.net',
+        'bsky.app',
+        'whatsapp.com',
+        'snapchat.com'
+      ];
+
+      let domainFound = false;
+      for (const domain of commonDomains) {
+        if (hostname.endsWith(domain)) { // Use endsWith for more accurate domain matching
+          domainFound = true;
+          break;
+        }
+      }
+
+      if (!domainFound) {
+        return "Please enter a link from a common social media platform (e.g., LinkedIn, Instagram).";
+      }
+      return ''; // Valid if it has a common domain and is a valid URL format
+
+    } catch (error) {
+      if (profileLink.length < 5) {
+        return "Please enter a valid social profile link or ID."; // Gibberish length check
+      }
+      return "Invalid social profile link format. Please enter a valid URL."; // General invalid format
+    }
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const profileError = validateSocialProfile(socialProfile);
+    setSocialProfileError(profileError);
+
+    if (profileError) {
+      return;
+    }
+
     try {
-      const response = await fetch('/api/updateuserdetails', { // <-- Updated endpoint
+      const response = await fetch('/api/updateuserdetails', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: session?.user?.email || "noemail@example.com", // Get email from session
+          email: session?.user?.email || "noemail@example.com",
           gender: gender,
           ageBracket: ageBracket,
+          socialProfile: socialProfile,
         }),
       });
 
       if (!response.ok) {
         throw new Error(`Failed to update user details: ${response.status}`);
       }
-
-      // After successful submission, redirect to the main app
       router.push('/');
     } catch (error) {
       console.error("Error updating user details:", error);
       alert('Failed to update details. Please try again.');
     }
+  };
+
+  const handleSocialProfileChange = (e) => {
+    setSocialProfile(e.target.value);
+    setSocialProfileError('');
   };
 
   return (
@@ -85,6 +150,24 @@ const DetailsPage = () => {
             </select>
           </div>
 
+          {/* Social Profile ID */}
+          <div className="mb-4">
+            <label htmlFor="socialProfile" className="block text-gray-700 text-sm font-bold mb-2">
+              Social Profile ID (LinkedIn, Instagram, etc.): <span className="text-gray-500">(Optional)</span>
+            </label>
+            <input
+              type="text"
+              id="socialProfile"
+              value={socialProfile}
+              onChange={handleSocialProfileChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="Enter your profile URL or ID"
+            />
+            {socialProfileError && (
+              <p className="text-red-500 text-xs italic">{socialProfileError}</p>
+            )}
+          </div>
+
           <div className="flex justify-end">
             <button
               type="submit"
@@ -94,14 +177,6 @@ const DetailsPage = () => {
             </button>
           </div>
         </form>
-
-        {/* Optional close button */}
-        {/* <button
-          onClick={() => router.push('/')}
-          className="absolute top-2 right-2 bg-gray-200 hover:bg-gray-300 rounded-full w-8 h-8 flex items-center justify-center"
-        >
-          X
-        </button> */}
       </div>
     </div>
   );

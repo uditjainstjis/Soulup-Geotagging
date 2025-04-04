@@ -10,6 +10,9 @@ const LocationSchema = new mongoose.Schema({
   time: { type: Date, required: true, default: Date.now },  // Changed to Date type
   email: { type: String, required: true },
   name: { type: String },
+  gender: { type: String }, // Add gender field - Optional
+  ageBracket: { type: String }, // Add ageBracket field - Optional
+  socialProfile: { type: String }, // Add socialProfile field - Optional
 });
 
 // Ensure timestamps for sorting & querying

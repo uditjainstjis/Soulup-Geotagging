@@ -23,7 +23,7 @@ export async function POST(req) {
              );
         }
 
-      const { email, gender, ageBracket } = await req.json();
+      const { email, gender, ageBracket, socialProfile } = await req.json(); // Destructure socialProfile
 
       // Check if email is valid
       if (!email || !email.includes('@')) {
@@ -35,13 +35,14 @@ export async function POST(req) {
         return NextResponse.json({ error: 'Gender and ageBracket are required' }, { status: 400 });
       }
 
-      // Update the User model with gender and ageBracket
+      // Update the User model with gender, ageBracket, and socialProfile
       const existingUser = await User.findOne({ email: email });
 
       if (existingUser) {
         // Update existing user
         existingUser.gender = gender;
         existingUser.ageBracket = ageBracket;
+        existingUser.socialProfile = socialProfile; // Update socialProfile
         await existingUser.save();
         return NextResponse.json({ message: 'User details updated successfully' });
       } else {

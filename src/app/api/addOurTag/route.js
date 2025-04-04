@@ -54,6 +54,9 @@ export async function POST(req) {
             },
             email: userEmail,
             name: userName,
+            gender: data.gender,       // Include gender from request
+            ageBracket: data.ageBracket, // Include ageBracket from request
+            socialProfile: data.socialProfile, // Include socialProfile from request
         };
 
         // Save tag to the Location collection

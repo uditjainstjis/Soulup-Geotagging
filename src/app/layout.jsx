@@ -8,6 +8,9 @@ export const viewport = {
 
 export const metadata = {
   title: "SoulUp Geotagging - Find & Connect with Like-Minded People", // More descriptive title
+  icons: {
+    icon: "/favico.png", // 👈 this is the favicon
+  },
   description: "Discover people nearby facing similar mental health challenges. SoulUp's geotagging system helps you find support groups and build connections.", // Matches og:description
   keywords: ["SoulUp", "SoulUp geotagging", "geotagging system", "mental health support", "find people", "connect with like-minded people", "mental wellness", "mental health geotagging", "mental health community", "find support groups", "geolocation mental health", "emotional support network", "map-based mental health support", "meet people like you", "find mental health resources", "therapy groups near me", "mental health mapping", "support network", "mental health connections", "location-based mental health support"], // Added keywords
   author: "SoulUp", // Added author

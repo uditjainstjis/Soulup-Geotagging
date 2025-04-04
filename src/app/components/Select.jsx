@@ -5,6 +5,7 @@ import Buttons from "./buttons";
 import SelectDropdown from "./SelectDropdown";
 import { MainLocations } from "./contexts";
 import SurveyBox from "./SurveyBox"; // Import the new component
+import { useSession } from "next-auth/react"; // Import useSession
 
 const Select = () => {
     var { Locs, setLocs } = useContext(MainLocations);
@@ -16,6 +17,8 @@ const Select = () => {
     const [optionValue, setOptionValue] = useState("");
     const [timeValue, setTimeValue] = useState("");
     const [showSurvey, setShowSurvey] = useState(false); // Track survey visibility
+    const [userDetails, setUserDetails] = useState(null); // State to store user details
+    const { data: session } = useSession(); // Get session for email
 
     const { location, locationRecieved, city } = useUserLocation();
     const [originalLocs, setOriginalLocs] = useState([]); // Store unfiltered locations
@@ -26,11 +29,11 @@ const Select = () => {
                 `api/Search-People-With-Same-Issue?tag=${encodedTag}&city=${city}`,
                 { method: "GET" }
             );
-    
+
             if (response.ok) {
                 const data = await response.json();
                 console.log("Fetched Data:", data);
-    
+
                 setLocs(data);
                 setOriginalLocs(data); // Store the original full list for resetting
             } else {
@@ -42,7 +45,24 @@ const Select = () => {
             alert("An error occurred while searching. Please try again later.");
         }
     }
-    
+
+    async function fetchUserDetails() {
+        try {
+            const response = await fetch('/api/userdetails'); // Assuming /api/userdetails fetches user details
+            if (response.ok) {
+                const data = await response.json();
+                setUserDetails(data);
+                return data; // Return user details for use in handleTellPeople
+            } else {
+                console.error("Failed to fetch user details");
+                return null; // Return null if fetch fails
+            }
+        } catch (error) {
+            console.error("Error fetching user details:", error);
+            return null; // Return null if error occurs
+        }
+    }
+
     function handleFirstButton() {
         setShow(true);
         setisDisabled(true);
@@ -62,11 +82,27 @@ const Select = () => {
         }
     }
 
-    function handleTellPeople(){
+    async function handleTellPeople() {
+        if (!session?.user?.email) {
+            alert("User email not found in session. Please ensure you are logged in.");
+            return;
+        }
+
+        const userDetailsData = await fetchUserDetails(); // Fetch user details here
+
+        if (!userDetailsData) {
+            alert("Failed to fetch user details. Please try again.");
+            return; // Stop if user details fetch fails
+        }
+
         const sendingBody = {
             city: city,
             tag: optionValue,
             location: { lat: location.latitude, lng: location.longitude },
+            email: session.user.email, // Include email for backend identification
+            gender: userDetailsData?.gender || null, // Include gender from fetched details
+            ageBracket: userDetailsData?.ageBracket || null, // Include ageBracket from fetched details
+            socialProfile: userDetailsData?.socialProfile || null, // Include socialProfile from fetched details
         };
         const encodedTag = encodeURIComponent(optionValue);
         console.log("I am sending this", sendingBody);
