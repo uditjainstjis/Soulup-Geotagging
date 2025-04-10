@@ -29,14 +29,11 @@ export async function POST(req){
         console.log("lele")
         console.log("lele")
         console.log("lele")
-        console.log("lele")
-        console.log("lele")
-        console.log("lele")
-        console.log("lele")
-        console.log(data.results[2]);
+        // console.log(data.results[2]);
 
-        const District = data.results[0].address_components[2].long_name
+        const District = data.results?.[0]?.address_components?.find(comp => comp.types?.includes("administrative_area_level_3"))?.long_name;
         // const District = data
+        console.log(District)
         console.log(District)
 
         return NextResponse.json({District});
