@@ -143,7 +143,7 @@ const Select = () => {
 
         <div className="bg-white rounded-2xl shadow-lg p-6 w-full mt-16">
             <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">
-                What are you facing currently?
+            What key challenge are you facing currently
             </h4>
 
             <div className="flex flex-col gap-4">

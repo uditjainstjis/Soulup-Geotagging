@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import Location from "../../../models/location";
-import User from "../../../models/user"; // Import User model
+import User from "../../../models/user";
+import ServerConfig from "../../../models/serverConfig"; // Import ServerConfig model
 import { connectToDatabase } from "../../../lib/mongodb";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../../lib/auth.config"; // Adjust path as necessary
+import { authOptions } from "../../../lib/auth.config";
 
 export async function POST(req) {
     try {
@@ -15,6 +16,7 @@ export async function POST(req) {
 
         const userEmail = session.user.email;
         const userName = session.user.name;
+        const userProfilePhoto = session.user.image;
 
         // Connect to DB
         await connectToDatabase();
@@ -23,12 +25,17 @@ export async function POST(req) {
         const user = await User.findOne({ email: userEmail });
 
         const currentTime = new Date();
+
+        // Fetch WindowWidth directly from the database
+        const serverConfig = await ServerConfig.findOne(); // Assuming only one config document
+        const windowWidthHours = serverConfig?.windowWidth || 24; // Default to 24 if not found
+
         if (user && user.timestamp) {
             const lastTimestamp = new Date(user.timestamp);
             const timeDiff = (currentTime - lastTimestamp) / (1000 * 60 * 60); // Convert to hours
 
-            if (timeDiff < 24) {
-                const remainingHours = (24 - timeDiff).toFixed(2);
+            if (timeDiff < windowWidthHours) {
+                const remainingHours = (windowWidthHours - timeDiff).toFixed(2);
                 return NextResponse.json(
                     { message: `Can't add more tags today. Try again in ${remainingHours} hours.` },
                     { status: 429 }
@@ -54,10 +61,10 @@ export async function POST(req) {
             },
             email: userEmail,
             name: userName,
-            gender: data.gender,       // Include gender from request
-            ageBracket: data.ageBracket, // Include ageBracket from request
-            socialProfile: data.socialProfile, // Include socialProfile from request
-            profilePhoto: data.profilePhoto, // Include profilePhoto from request - ADDED THIS LINE
+            gender: data.gender,
+            ageBracket: data.ageBracket,
+            socialProfile: data.socialProfile,
+            profilePhoto: data.profilePhoto, // Include profilePhoto from request
         };
 
         // Save tag to the Location collection

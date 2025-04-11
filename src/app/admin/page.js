@@ -14,6 +14,10 @@ const AdminSurveyPanel = () => {
     const [tagInput, setTagInput] = useState("");
     const [possibleTagsInput, setPossibleTagsInput] = useState("");
     const [prevPossibleTags, setPrevPossibleTags] = useState([]);
+    // New states for hourSize window
+    const [hourSizeWindow, setHourSizeWindow] = useState("");
+    const [prevHourSizeWindow, setPrevHourSizeWindow] = useState("");
+
 
     const verifyPassword = async () => {
         try {
@@ -65,6 +69,13 @@ const AdminSurveyPanel = () => {
                 const tagsData = await tagsRes.json();
                 setTags(tagsData.tags);
                 setTagInput(tagsData.tags.join('\n'));
+
+                // Fetch hourSizeWindow
+                const hourSizeRes = await fetch("/api/hourSize");
+                if (!hourSizeRes.ok) throw new Error(`Failed to fetch hourSize: ${hourSizeRes.status}`);
+                const hourSizeData = await hourSizeRes.json();
+                setHourSizeWindow(String(hourSizeData.windowWidth)); // Convert to string for input
+                setPrevHourSizeWindow(String(hourSizeData.windowWidth)); // Set prev value too
 
             } catch (err) {
                 setError(`Error fetching data: ${err.message}`);
@@ -119,6 +130,22 @@ const AdminSurveyPanel = () => {
         }
     }
 
+    async function saveHourSizeWindow() {
+        try {
+            const res = await fetch("/api/hourSize", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ windowWidth: Number(hourSizeWindow) }) // Send as number
+            });
+            if (!res.ok) throw new Error("Failed to save Hour Size Window");
+            alert("Hour Size Window updated successfully!");
+            setPrevHourSizeWindow(hourSizeWindow); // Update prev value on success
+        } catch (error) {
+            alert(`Error saving Hour Size Window: ${error}`);
+        }
+    }
+
+
     if (!authenticated) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-400 to-purple-500 p-6">
@@ -156,7 +183,7 @@ const AdminSurveyPanel = () => {
                 ) : error ? (
                     <div className="text-red-500 text-center">{error}</div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Updated to lg:grid-cols-3 */}
 
                         {/* Survey Question Section */}
                         <div className="bg-white shadow-lg rounded-xl p-6 border border-gray-200 transition-shadow hover:shadow-xl">
@@ -227,6 +254,38 @@ const AdminSurveyPanel = () => {
                             </button>
                         </div>
 
+                        {/* Hour Size Window Section - MOVED TO MIDDLE */}
+                        <div className="bg-white shadow-lg rounded-xl p-6 border border-gray-200 transition-shadow hover:shadow-xl">
+                            <h2 className="text-xl font-semibold text-gray-800 mb-4">Rate Limit Window (Hours)</h2>
+
+                            {/* Previously Used Hour Size Window */}
+                            <div className="mb-4 p-4 bg-gray-50 rounded-lg shadow-md text-left border border-gray-200">
+                                <h3 className="text-md font-semibold text-gray-700">Current Window Size:</h3>
+                                <p className="text-gray-800">{prevHourSizeWindow || "Not set"}</p>
+                            </div>
+
+                            {/* New Hour Size Window Input */}
+                            <div className="mb-4">
+                                <label htmlFor="hourSizeWindow" className="block text-sm font-medium text-gray-700">New Window Size (Hours)</label>
+                                <input
+                                    type="number"
+                                    id="hourSizeWindow"
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    value={hourSizeWindow}
+                                    onChange={(e) => setHourSizeWindow(e.target.value)}
+                                    placeholder="Enter hour size window"
+                                    min="1" // Ensure minimum 1 hour
+                                />
+                            </div>
+
+                            <button
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
+                                onClick={saveHourSizeWindow}
+                            >
+                                Save Hour Size Window
+                            </button>
+                        </div>
+
                         {/* Tags Section */}
                         <div className="bg-white shadow-lg rounded-xl p-6 border border-gray-200 transition-shadow hover:shadow-xl">
                             <h2 className="text-xl font-semibold text-gray-800 mb-4">Manage Tags</h2>
@@ -261,6 +320,8 @@ const AdminSurveyPanel = () => {
                                 </div>
                             )}
                         </div>
+
+
                     </div>
                 )}
             </main>
