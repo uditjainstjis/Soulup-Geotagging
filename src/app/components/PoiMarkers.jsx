@@ -75,6 +75,7 @@ const PoiMarkers = ({ pois }) => {
                                     src={selectedPoi.profilePhoto || "/user.png"}
                                     alt={`${selectedPoi.name || 'Anonymous'} Profile`}
                                     width={44}
+                                    onError={(e) => (e.target.src = "/user.png")}
                                     height={44}
                                     layout="fixed"
                                     objectFit="cover"
@@ -95,7 +96,7 @@ const PoiMarkers = ({ pois }) => {
                                                                     {/* Info icon with tooltip */}
                                 <span className="relative group cursor-pointer text-xs text-gray-400 border border-gray-300 rounded-full px-1.5 py-0.5">
                                     i
-                                    <span className="absolute left-2/3 -translate-x-1/2 -translate-y-6  mt-1 w-max bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                                    <span className="absolute left-2/3 -translate-x-full -translate-y-6  mt-1 w-max bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
                                         This person is a Soulup Peer.
                                     </span>
                                 </span></>
