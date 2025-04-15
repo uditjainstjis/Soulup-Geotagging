@@ -124,19 +124,23 @@ const PoiMarkers = ({ pois }) => {
                             </div>
                         </div>
 
-                        {selectedPoi.socialProfile && (
+                        {selectedPoi.socialProfile.trim() && (
                             <div className="mb-3">
                                 <span className="font-semibold text-gray-700 mr-1">
                                     Profile: 
                                 </span>
                                 <a
-                                    href={selectedPoi.socialProfile}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-500 hover:underline text-sm"
-                                >
-                                    View Profile {getSocialPlatformName(selectedPoi.socialProfile) ? `(${getSocialPlatformName(selectedPoi.socialProfile)})` : ''}
-                                </a>
+    href={
+        selectedPoi.socialProfile.startsWith("www.")
+            ? `https://${selectedPoi.socialProfile}`
+            : selectedPoi.socialProfile
+    }
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-blue-500 hover:underline text-sm"
+>
+    View Profile {getSocialPlatformName(selectedPoi.socialProfile) ? `(${getSocialPlatformName(selectedPoi.socialProfile)})` : ''}
+</a>
                             </div>
                         )}
 
