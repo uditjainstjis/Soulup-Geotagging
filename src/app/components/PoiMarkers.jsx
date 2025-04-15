@@ -124,7 +124,7 @@ const PoiMarkers = ({ pois }) => {
                             </div>
                         </div>
 
-                        {selectedPoi.socialProfile.trim() && (
+                        {selectedPoi.socialProfile && (
                             <div className="mb-3">
                                 <span className="font-semibold text-gray-700 mr-1">
                                     Profile: 
