@@ -31,44 +31,30 @@ export async function POST(req){
         console.log("lele")
         // console.log(data.results[2]);
 
-        const getCityOrRegion = (addressComponents, formattedAddress) => {
-            // First, try to get administrative_area_level_3 (your primary target)
-            const adminLevel3 = addressComponents.find(comp =>
-              comp.types?.includes("administrative_area_level_3")
-            );
-            if (adminLevel3?.long_name) {
-              return adminLevel3.long_name;
+        const getCityOrRegion = (addressComponents) => {
+          const typePriority = [
+            "locality", // primary city-level component
+            "postal_town", // UK-specific
+            "administrative_area_level_3", // often district (India)
+            "sublocality", // e.g., areas within cities
+            "neighborhood",
+            "administrative_area_level_2", // sometimes districts
+            "administrative_area_level_1", // state, sometimes city in UAE
+            "country" // fallback
+          ];
+        
+          for (const type of typePriority) {
+            const component = addressComponents.find(comp => comp.types?.includes(type));
+            if (component?.long_name) {
+              return component.long_name;
             }
-          
-            // If not found, try fallback types
-            const fallbackTypes = [
-              "locality",
-              "postal_town",
-              "sublocality",
-              "neighborhood",
-              "administrative_area_level_2",
-              "administrative_area_level_1",
-              "country"
-            ];
-          
-            for (const type of fallbackTypes) {
-              const component = addressComponents.find(comp =>
-                comp.types?.includes(type)
-              );
-              if (component?.long_name) {
-                return component.long_name;
-              }
-            }
-          
-            // If none of the above work, return the formatted_address
-            return formattedAddress || "Unknown Location";
-          };
-          
-          // Usage
-          const formattedAddress = data.results?.[0]?.formatted_address;
-          const District = getCityOrRegion(data.results?.[0]?.address_components || [], formattedAddress);
-          
-          
+          }
+        
+          return "Unknown Location";
+        };
+        
+        const District = getCityOrRegion(data.results?.[0]?.address_components || []);
+        
         // const District = data
         console.log(District)
         console.log(District)
