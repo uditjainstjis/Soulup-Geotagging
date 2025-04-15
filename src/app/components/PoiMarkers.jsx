@@ -36,6 +36,8 @@ const PoiMarkers = ({ pois }) => {
             return "Threads";
         } else if (lowerUrl.includes("bsky.app")) {
             return "Bluesky";
+        } else if (lowerUrl.includes("soulup.in")) {
+            return "Soulup";
         }
         return "Social Profile"; // Default if platform not recognized
     };
@@ -66,7 +68,7 @@ const PoiMarkers = ({ pois }) => {
                         pixelOffset: { width: 0, height: -35 },
                       }}
                 >
-                    <div className="p-4 bg-white rounded-xl shadow-lg w-72 border border-gray-100">
+                    <div className={`p-4 bg-white rounded-xl shadow-lg w-72 border ${getSocialPlatformName(selectedPoi.socialProfile) == 'Soulup'?'border-red-400':'border-gray-200'} `}>
                         <div className="flex items-center mb-3 pb-3 border-b border-gray-200">
                             <div className="mr-3 rounded-full overflow-hidden w-11 h-11 relative">
                                 <Image
@@ -84,9 +86,24 @@ const PoiMarkers = ({ pois }) => {
                                 <h2 className='text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors'>
                                     {selectedPoi.name || 'Anonymous User'}
                                 </h2>
-                                <p className="text-sm text-gray-500 truncate max-w-[150px]" title={selectedPoi.city}>
-                                    {selectedPoi.city}
-                                </p>
+                                <div className="text-sm text-gray-500 flex items-center gap-2">
+                                <span className="text-start">{selectedPoi.city}</span>
+
+                                {/* Conditional Peer tag */}
+                                {getSocialPlatformName(selectedPoi.socialProfile) == 'Soulup' && (<>
+                                    <span className="text-rose-500 ml-auto">Peer</span>
+                                                                    {/* Info icon with tooltip */}
+                                <span className="relative group cursor-pointer text-xs text-gray-400 border border-gray-300 rounded-full px-1.5 py-0.5">
+                                    i
+                                    <span className="absolute left-2/3 -translate-x-1/2 -translate-y-6  mt-1 w-max bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                                        This person is a Soulup Peer.
+                                    </span>
+                                </span></>
+                                )}
+
+
+                                </div>
+
                             </div>
                         </div>
 

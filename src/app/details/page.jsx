@@ -39,7 +39,8 @@ const DetailsPage = () => {
         'threads.net',
         'bsky.app',
         'whatsapp.com',
-        'snapchat.com'
+        'snapchat.com',
+        'soulup.in'
       ];
 
       let domainFound = false;
