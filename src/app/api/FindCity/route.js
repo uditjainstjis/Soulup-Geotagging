@@ -16,7 +16,7 @@ export async function POST(req){
         }
 
         const google_api = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY_NO_RESTRICTION;
-        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&region=in&key=${google_api}`;
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${18.94631},${72.75092407}&region=in&key=${google_api}`;
 
 
     // Iterate over results and address_components to find the district
@@ -29,9 +29,11 @@ export async function POST(req){
         console.log("lele")
         console.log("lele")
         console.log("lele")
-        // console.log(data.results[2]);
+        console.log(data.results);
 
-        const District = data.results?.[0]?.address_components?.find(comp => comp.types?.includes("administrative_area_level_3"))?.long_name;
+        const District = data.results?.flatMap(result => result.address_components || [])
+        .find(comp => comp.types?.includes("administrative_area_level_3"))?.long_name;
+      
         // const District = data
         console.log(District)
         console.log(District)

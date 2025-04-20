@@ -44,7 +44,12 @@ export async function GET(req) {
     }
 
     // Fetch all locations
+    
+    // const numberOfSamples = 100;
     const locations = await Location.find();
+    // const locations = await Location.aggregate([
+    //   { $sample: { size: numberOfSamples } }
+    // ]);
 
     return NextResponse.json(locations);
   } catch (error) {
