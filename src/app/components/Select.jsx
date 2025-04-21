@@ -20,6 +20,17 @@ const Select = () => {
     const [userDetails, setUserDetails] = useState(null); // State to store user details
     const { data: session } = useSession(); // Get session for email
 
+    const [window, setWindow] = useState(24)
+
+    useEffect(()=>{
+        async function call(){
+            const response = await fetch('/api/hourSize')
+            const data = await response.json()
+            setWindow(data.windowWidth)
+        }
+        call()
+    }, [])
+
     const { location, locationRecieved, city } = useUserLocation();
     const [originalLocs, setOriginalLocs] = useState([]); // Store unfiltered locations
 
@@ -145,6 +156,8 @@ const Select = () => {
             <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">
             What key challenge are you facing currently?
             </h4>
+
+            <h6 className="text-xs text-gray-600 mb-2"> SoulUp currently allows you to only add only 1 challenge in {window} hours to prevent misuse of the geotagging feature.</h6>
 
             <div className="flex flex-col gap-4">
                 <SelectDropdown

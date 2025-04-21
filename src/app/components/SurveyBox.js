@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useUserLocation } from "./useLocation";
+import { useSession } from "next-auth/react"; // Import useSession
 
 const SurveyBox = ({ onClose }) => {
     const [question, setQuestion] = useState(null);
     const [tags, setTags] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { data: session } = useSession();
 
     useEffect(() => {
         async function fetchSurveyQuestion() {
@@ -41,9 +44,69 @@ const SurveyBox = ({ onClose }) => {
 
         fetchSurveyQuestion();
     }, []);
+    const { location, locationRecieved, city } = useUserLocation();
+    async function fetchUserDetails() {
+        try {
+            const response = await fetch('/api/userdetails'); // Assuming /api/userdetails fetches user details
+            if (response.ok) {
+                const data = await response.json();
+                setUserDetails(data);
+                return data; // Return user details for use in handleTellPeople
+            } else {
+                console.error("Failed to fetch user details");
+                return null; // Return null if fetch fails
+            }
+        } catch (error) {
+            console.error("Error fetching user details:", error);
+            return null; // Return null if error occurs
+        }
+    }
+    async function addOurTag() {
+        if (!session?.user?.email) {
+            alert("User email not found in session. Please ensure you are logged in.");
+            return;
+        }
+
+        const userDetailsData = await fetchUserDetails(); // Fetch user details here
+
+        if (!userDetailsData) {
+            alert("Failed to fetch user details. Please try again.");
+            return; // Stop if user details fetch fails
+        }
+
+        const sendingBody = {
+            city: city,
+            tag: optionValue,
+            location: { lat: location.latitude, lng: location.longitude },
+            email: session.user.email, // Include email for backend identification
+            gender: userDetailsData?.gender || null, // Include gender from fetched details
+            ageBracket: userDetailsData?.ageBracket || null, // Include ageBracket from fetched details
+            socialProfile: userDetailsData?.socialProfile || null, // Include socialProfile from fetched details
+            profilePhoto: session?.user?.image || null, // Include profilePhoto from session
+        };
+        const encodedTag = encodeURIComponent(optionValue);
+        console.log("I am sending this", sendingBody);
+
+        if (locationRecieved) {
+            fetch('/api/addOurTag', {
+                method: "POST",
+                headers: { "Content-Type": "application/JSON" },
+                body: JSON.stringify(sendingBody)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                searchPeopleWithSameIssue(encodedTag, setLocs);
+            })
+            .catch(err => { console.log("Failed to send data", err); });
+        } else {
+            alert("Cannot proceed, Allow Location from the settings of the browser");
+        }
+    }
 
     const submitResponse = async (answer) => {
         try {
+
             const res = await fetch("/api/submitResponse", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -53,7 +116,7 @@ const SurveyBox = ({ onClose }) => {
             if (!res.ok) {
                 throw new Error("Failed to submit response");
             }
-
+            addOurTag()
             alert("Response submitted successfully!");
             onClose();
         } catch (error) {
