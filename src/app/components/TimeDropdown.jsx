@@ -40,7 +40,9 @@ const TimeDropdown = ({ timeValue, setTimeValue, originalLocs }) => {
     }).map(range => range.label);
 
     if (validRanges.length === 0 && originalLocs.length > 0) {
-      return ["Show All"];  // Only "Show All" if *some* data exists
+      console.log(originalLocs)
+      alert(originalLocs)
+      return [`Show All + ${originalLocs}`];  // Only "Show All" if *some* data exists
     }
 
     return [...validRanges, "Show All"]; // Add "Show All" if any ranges are valid

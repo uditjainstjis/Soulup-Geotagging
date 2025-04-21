@@ -1,61 +1,74 @@
 // pages/api/submitResponse.js
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongodb';
-import SurveyResponse from '../../../models/surveyResponse';
+import SurveyResponse from '../../../models/surveyResponse'; // Your SurveyResponse model
 import { getServerSession } from "next-auth/next";
 
 export async function POST(req) {
+    let session;
     try {
-        const session = await getServerSession(req);
-
-        console.log("Session object:", session); // ADD THIS LINE
+        // 1. Get Session
+        session = await getServerSession(req);
+        console.log("SubmitResponse - Session object:", session);
 
         if (!session || !session.user) {
             return NextResponse.json(
-                { response: "Unauthorized, session required to submit response" },
-                {
-                    status: 401,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Cache-Control': 'no-store, no-cache, must-revalidate'
-                    }
-                }
+                { response: "Unauthorized, session required" },
+                { status: 401, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } }
             );
         }
 
-        const userEmail = session.user.email; // Extract email from session
-        console.log("User email from session:", userEmail); // ADD THIS LINE
+        const userEmail = session.user.email;
+        const sessionUserName = session.user.name;
+        const sessionUserImage = session.user.image;
+        console.log("SubmitResponse - User email from session:", userEmail);
 
-        if (!userEmail) { // ADD THIS CHECK
-            console.log("Email is missing in session.user.email!"); // ADD THIS LINE
-            return NextResponse.json({ success: false, error: "Email not found in session." }, { status: 400 }); // Return error if email is missing
+        if (!userEmail) {
+            console.log("SubmitResponse - Email is missing in session.user!");
+            return NextResponse.json({ success: false, error: "Email not found in session." }, { status: 400 });
         }
 
-
+        // Connect to DB
         await connectToDatabase();
 
+        // Get survey data from request body
         const { question, answer, tags } = await req.json();
-
 
         if (!question || !answer) {
             return NextResponse.json({ success: false, error: "Question and answer are required." }, { status: 400 });
         }
 
-        const newSurveyResponse = new SurveyResponse({
+        // Prepare Data for SurveyResponse Model
+        const surveyData = {
             email: userEmail,
             question: question,
             response: answer,
-            possibleTags: tags,
-        });
+            possibleTags: tags || [], // Ensure tags is an array
+            submittedAt: new Date(), // Submission time for the survey
 
-        console.log("SurveyResponse object before save:", newSurveyResponse); // ADD THIS LINE
+            // Basic user snapshot from session (optional but often useful)
+            name: sessionUserName || 'anonymous', // Use session name
+            profilePhoto: sessionUserImage || null, // Use session image
+            // --- No longer fetching or including city, location, gender etc. here ---
+        };
 
-
+        // --- Save ONLY to SurveyResponse Collection ---
+        const newSurveyResponse = new SurveyResponse(surveyData);
+        console.log("SubmitResponse - SurveyResponse object before save:", newSurveyResponse);
         await newSurveyResponse.save();
+        // --- End Save Operation ---
 
-        return NextResponse.json({ success: true, message: "Response submitted successfully!" }, { status: 201 });
+        // Don't trigger location update from here anymore
+
+        return NextResponse.json({ success: true, message: "Survey response submitted successfully!" }, { status: 201 });
+
     } catch (error) {
-        console.error("Error submitting survey response:", error);
-        return NextResponse.json({ success: false, error: `Server error: Failed to submit response - ${error}` }, { status: 500 });
+        console.error("Error in /api/submitResponse:", error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (error.name === 'ValidationError') {
+             const errors = Object.values(error.errors).map(el => el.message);
+             return NextResponse.json({ success: false, error: `Validation Failed: ${errors.join(', ')}` }, { status: 400 });
+        }
+        return NextResponse.json({ success: false, error: `Server error: ${errorMessage}` }, { status: 500 });
     }
 }
