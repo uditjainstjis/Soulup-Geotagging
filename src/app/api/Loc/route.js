@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongodb';
 import Location from '../../../models/location';
 import User from '../../../models/user';
-// import { getServerSession } from "next-auth/next";
+import { getServerSession } from "next-auth/next";
 
 export async function GET() {
   try {
-    // const session = await getServerSession(req);
+    const session = await getServerSession(req);
 
     // if (!session || !session.user) {
     //   return NextResponse.json(
@@ -23,9 +23,9 @@ export async function GET() {
 
     await connectToDatabase();
 
-    const userEmail = session.user.email;
-    const userName = session.user.name;
-    const profilePhoto = session.user.image;
+    const userEmail = session.user.email || 'random@gmail.com';
+    const userName = session.user.name || 'random';
+    const profilePhoto = session.user.image || '/random.jpg';
 
     // Check if user exists
     const user = await User.findOne({ email: userEmail });
