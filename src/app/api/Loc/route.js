@@ -4,7 +4,7 @@ import Location from '../../../models/location';
 import User from '../../../models/user';
 import { getServerSession } from "next-auth/next";
 
-export async function GET() {
+export async function GET(req) {
   try {
     const session = await getServerSession(req);
 
