@@ -41,7 +41,7 @@ const TimeDropdown = ({ timeValue, setTimeValue, originalLocs }) => {
 
     if (validRanges.length === 0 && originalLocs.length > 0) {
       console.log(originalLocs.length)
-      alert(originalLocs.length)
+      // alert(originalLocs.length)
       return [`Show All + ${originalLocs.length}`];  // Only "Show All" if *some* data exists
     }
 
