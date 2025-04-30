@@ -2,24 +2,24 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongodb';
 import Location from '../../../models/location';
 import User from '../../../models/user';
-import { getServerSession } from "next-auth/next";
+// import { getServerSession } from "next-auth/next";
 
 export async function GET(req) {
   try {
-    const session = await getServerSession(req);
+    // const session = await getServerSession(req);
 
-    if (!session || !session.user) {
-      return NextResponse.json(
-        { response: "Unauthorized" },
-        {
-          status: 401,
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store, no-cache, must-revalidate'
-          }
-        }
-      );
-    }
+    // if (!session || !session.user) {
+    //   return NextResponse.json(
+    //     { response: "Unauthorized" },
+    //     {
+    //       status: 401,
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         'Cache-Control': 'no-store, no-cache, must-revalidate'
+    //       }
+    //     }
+    //   );
+    // }
 
     await connectToDatabase();
 
