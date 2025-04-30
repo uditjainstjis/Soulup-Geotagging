@@ -1,3 +1,4 @@
+// /pages/api/Loc.js or /app/api/Loc/route.js
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongodb';
 import Location from '../../../models/location';
@@ -8,30 +9,29 @@ export async function GET(req) {
   try {
     const session = await getServerSession(req);
 
-    // if (!session || !session.user) {
-    //   return NextResponse.json(
-    //     { response: "Unauthorized" },
-    //     {
-    //       status: 401,
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         'Cache-Control': 'no-store, no-cache, must-revalidate'
-    //       }
-    //     }
-    //   );
-    // }
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { response: "Unauthorized" },
+        {
+          status: 401,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store, no-cache, must-revalidate'
+          }
+        }
+      );
+    }
 
     await connectToDatabase();
 
-    const userEmail = session.user.email || 'random@gmail.com';
-    const userName = session.user.name || 'random';
-    const profilePhoto = session.user.image || '/random.jpg';
+    const userEmail = session.user.email;
+    const userName = session.user.name;
+    const profilePhoto = session.user.image;
 
-    // Check if user exists
+    // Check if user exists (This logic can stay as it's separate from data fetching)
     const user = await User.findOne({ email: userEmail });
 
     if (!user) {
-      // Set timestamp to 25 hours before (so they can add tags immediately)
       const pastTimestamp = new Date();
       pastTimestamp.setHours(pastTimestamp.getHours() - 25);
 
@@ -43,15 +43,35 @@ export async function GET(req) {
       });
     }
 
-    // Fetch all locations
-    
-    // const numberOfSamples = 100;
-    const locations = await Location.find();
-    // const locations = await Location.aggregate([
-    //   { $sample: { size: numberOfSamples } }
-    // ]);
+    // --- Pagination Logic Starts Here ---
 
-    return NextResponse.json(locations);
+    const url = new URL(req.url);
+    const skip = parseInt(url.searchParams.get('skip') || '0', 10); // Default skip to 0
+    const limit = parseInt(url.searchParams.get('limit') || '1000', 10); // Default limit to 1000
+
+    if (isNaN(skip) || isNaN(limit) || skip < 0 || limit <= 0) {
+      return NextResponse.json(
+        { error: 'Invalid pagination parameters' },
+        { status: 400 }
+      );
+    }
+
+    // Fetch a chunk of locations
+    const locations = await Location.find().skip(skip).limit(limit);
+
+    // Get the total count of locations (needed for frontend to know when to stop)
+    // This count query should ideally be fast as it might use an index
+    const totalCount = await Location.countDocuments(); // Or count based on your query if you add filters later
+
+    return NextResponse.json({
+        locations,
+        totalCount,
+        skip, // Return skip and limit for potential debugging or client-side checks
+        limit,
+        // Optional: Indicate if there's a next page - useful if totalCount is very large or estimated
+        hasNextPage: (skip + locations.length) < totalCount
+    });
+
   } catch (error) {
     console.error("Error fetching locations:", error);
     return NextResponse.json(
@@ -66,6 +86,7 @@ export async function GET(req) {
   }
 }
 
+// POST method remains unchanged unless you need to adapt it
 export async function POST(req) {
   try {
     await connectToDatabase();  // Connect to MongoDB
