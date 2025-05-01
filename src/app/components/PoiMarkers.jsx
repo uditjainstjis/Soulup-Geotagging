@@ -187,7 +187,7 @@ const PoiMarkers = ({ pois }) => {
                             </div>
                             <div>
                                 <span className="font-semibold text-gray-700 mr-1">Age:</span>
-                                <span className="text-gray-800">{selectedPoi.ageBracket || 'Not specified'}</span>
+                                <span className="text-gray-800">{selectedPoi.age || selectedPoi.ageBracket || 'Not specified'}</span>
                             </div>
                         </div>
                         {selectedPoi.socialProfile && (
