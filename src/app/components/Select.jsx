@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { use, useContext, useEffect, useState } from "react";
 import { useUserLocation } from "./useLocation";
 import TimeDropdown from "./TimeDropdown";
 import Buttons from "./buttons";
@@ -13,6 +13,7 @@ const Select = () => {
     const [showButton, setShowButton] = useState(false);
     const [tellButton, setTellButton] = useState(false);
     const [show, setShow] = useState(false);
+    const [count, setCount] = useState(null)
     const [isDisabled, setisDisabled] = useState(false);
     const [optionValue, setOptionValue] = useState("");
     const [timeValue, setTimeValue] = useState("");
@@ -45,8 +46,9 @@ const Select = () => {
                 const data = await response.json();
                 console.log("Fetched Data:", data);
 
-                setLocs(data);
-                setOriginalLocs(data); // Store the original full list for resetting
+                setLocs(data.locations);
+                setCount(data.count)
+                setOriginalLocs(data.locations); // Store the original full list for resetting
             } else {
                 const errorData = await response.json();
                 console.error("Error response:", errorData);
@@ -173,6 +175,7 @@ const Select = () => {
                         originalLocs={originalLocs} // Pass the original data
                     />
                 )}
+                {show &&<p className="text-sm">Found {count} other's like you, {originalLocs.length} within your city</p>}
 
                 <Buttons
                     showButton={showButton}
@@ -180,11 +183,16 @@ const Select = () => {
                     handleFirstButton={handleFirstButton}
                     handleTellPeople={handleTellPeople}
                 />
+                
             </div>
 
         <div className="bg-white rounded-2xl shadow-lg w-full mt-6 ">
             {showSurvey && <SurveyBox onClose={() => setShowSurvey(false)} />}
         </div>
+        <div className="flex flex-row">
+                <img src="cluster.png" className="w-16 mr-3"></img>
+                <p className="text-xs text-start">these blue and red circle shows there are that no. of people in that area</p>
+                </div>
             {/* Show Survey Box separately when triggered */}
         </div>
 

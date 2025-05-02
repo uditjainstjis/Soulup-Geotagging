@@ -9,6 +9,7 @@ export async function GET(req){
         const tag = searchParams.get('tag')
         const city = searchParams.get('city')
 
+
         if(!tag){
             return NextResponse.json({ message: "Missing 'tag' parameter" }, { status: 400 });
         }
@@ -17,10 +18,11 @@ export async function GET(req){
         }
 
         await connectToDatabase();
+        const count = await Location.countDocuments({tag:tag})
         const locations = await Location.find({tag:tag, city:city})
         
         console.log("laoasdfa",locations)
-        return NextResponse.json(locations)
+        return NextResponse.json({count, locations})
     }
     catch(err){
         console.error("Error finding people with the tag", err)

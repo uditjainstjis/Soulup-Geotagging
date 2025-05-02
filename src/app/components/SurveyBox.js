@@ -216,6 +216,7 @@ const SurveyBox = ({ onClose }) => {
                     No
                 </button>
             </div>
+            <p className="text-xs mt-4 mb-[-10px]">ⓘ By clicking Yes, you consent to upload your data.</p>
         </div>
     );
 };
