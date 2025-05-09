@@ -1,54 +1,53 @@
-import React, { use, useContext, useEffect, useState } from "react";
+// ./Select.js (Modified)
+import React, { useContext, useEffect, useState } from "react";
 import { useUserLocation } from "./useLocation";
 import TimeDropdown from "./TimeDropdown";
-import Buttons from "./buttons";
+// import Buttons from "./buttons"; // No longer directly imported here
 import SelectDropdown from "./SelectDropdown";
 import { MainLocations } from "./contexts";
-import SurveyBox from "./SurveyBox"; // Import the new component
-import { useSession } from "next-auth/react"; // Import useSession
+import SurveyBox from "./SurveyBox";
+import { useSession } from "next-auth/react";
+import ActionButtonsController from "./ActionButtonsController"; // Import the new component
 
 const Select = () => {
-    var { Locs, setLocs } = useContext(MainLocations);
+    const { Locs, setLocs } = useContext(MainLocations); // 'Locs' is declared but not used. Consider removing if not needed.
 
-    const [showButton, setShowButton] = useState(false);
-    const [tellButton, setTellButton] = useState(false);
     const [show, setShow] = useState(false);
-    const [count, setCount] = useState(null)
+    const [count, setCount] = useState(null);
     const [isDisabled, setisDisabled] = useState(false);
     const [optionValue, setOptionValue] = useState("");
     const [timeValue, setTimeValue] = useState("");
-    const [showSurvey, setShowSurvey] = useState(false); // Track survey visibility
-    const [userDetails, setUserDetails] = useState(null); // State to store user details
-    const { data: session } = useSession(); // Get session for email
+    const [showSurvey, setShowSurvey] = useState(false);
+    const [userDetails, setUserDetails] = useState(null);
+    const { data: session } = useSession();
 
-    const [window, setWindow] = useState(24)
+    const [windowPeriod, setWindowPeriod] = useState(24); // Renamed from 'window' to avoid conflict
 
-    useEffect(()=>{
-        async function call(){
-            const response = await fetch('/api/hourSize')
-            const data = await response.json()
-            setWindow(data.windowWidth)
+    useEffect(() => {
+        async function call() {
+            const response = await fetch('/api/hourSize');
+            const data = await response.json();
+            setWindowPeriod(data.windowWidth);
         }
-        call()
-    }, [])
+        call();
+    }, []);
 
     const { location, locationRecieved, city } = useUserLocation();
-    const [originalLocs, setOriginalLocs] = useState([]); // Store unfiltered locations
+    const [originalLocs, setOriginalLocs] = useState([]);
 
-    async function searchPeopleWithSameIssue(encodedTag, setLocs) {
+    async function searchPeopleWithSameIssue(encodedTag) { // setLocs is already available from context
         try {
             const response = await fetch(
-                `api/Search-People-With-Same-Issue?tag=${encodedTag}&city=${city}`,
+                `/api/Search-People-With-Same-Issue?tag=${encodedTag}&city=${city}`,
                 { method: "GET" }
             );
 
             if (response.ok) {
                 const data = await response.json();
                 console.log("Fetched Data:", data);
-
                 setLocs(data.locations);
-                setCount(data.count)
-                setOriginalLocs(data.locations); // Store the original full list for resetting
+                setCount(data.count);
+                setOriginalLocs(data.locations);
             } else {
                 const errorData = await response.json();
                 console.error("Error response:", errorData);
@@ -61,32 +60,32 @@ const Select = () => {
 
     async function fetchUserDetails() {
         try {
-            const response = await fetch('/api/userdetails'); // Assuming /api/userdetails fetches user details
+            const response = await fetch('/api/userdetails');
             if (response.ok) {
                 const data = await response.json();
-                setUserDetails(data);
-                return data; // Return user details for use in handleTellPeople
+                setUserDetails(data); // Store for potential reuse
+                return data;
             } else {
                 console.error("Failed to fetch user details");
-                return null; // Return null if fetch fails
+                return null;
             }
         } catch (error) {
             console.error("Error fetching user details:", error);
-            return null; // Return null if error occurs
+            return null;
         }
     }
 
-    function handleFirstButton() {
+    // Renamed for clarity when passing as prop
+    function handleSearchAction() {
         setShow(true);
         setisDisabled(true);
-        setShowButton(false);
-        setTellButton(true);
+        // setShowButton(false); // This logic is now in ActionButtonsController
+        // setTellButton(true);  // This logic is now in ActionButtonsController (based on timeValue)
 
         const encodedTag = encodeURIComponent(optionValue);
         if (optionValue.trim() !== "") {
-            searchPeopleWithSameIssue(encodedTag, setLocs);
+            searchPeopleWithSameIssue(encodedTag);
 
-            // Show the survey box after 2 seconds
             setTimeout(() => {
                 setShowSurvey(true);
             }, 2000);
@@ -95,71 +94,64 @@ const Select = () => {
         }
     }
 
-    async function handleTellPeople() {
+    // Renamed for clarity when passing as prop
+    async function handleTellPeopleAction() {
         if (!session?.user?.email) {
             alert("User email not found in session. Please ensure you are logged in.");
             return;
         }
 
-        const userDetailsData = await fetchUserDetails(); // Fetch user details here
+        // Attempt to use already fetched details, or fetch them if not available
+        const details = userDetails || await fetchUserDetails();
 
-        if (!userDetailsData) {
+        if (!details) {
             alert("Failed to fetch user details. Please try again.");
-            return; // Stop if user details fetch fails
+            return;
+        }
+        
+        if (!locationRecieved || !location || !city) {
+            alert("Location data is not available. Please enable location services or wait for it to be determined.");
+            return;
         }
 
         const sendingBody = {
             city: city,
             tag: optionValue,
             location: { lat: location.latitude, lng: location.longitude },
-            email: session.user.email, // Include email for backend identification
-            gender: userDetailsData?.gender || null, // Include gender from fetched details
-            ageBracket: userDetailsData?.ageBracket || null, // Include ageBracket from fetched details
-            socialProfile: userDetailsData?.socialProfile || null, // Include socialProfile from fetched details
-            profilePhoto: session?.user?.image || null, // Include profilePhoto from session
+            email: session.user.email,
+            gender: details?.gender || null,
+            ageBracket: details?.ageBracket || null,
+            socialProfile: details?.socialProfile || null,
+            profilePhoto: session?.user?.image || null,
         };
         const encodedTag = encodeURIComponent(optionValue);
         console.log("I am sending this", sendingBody);
 
-        if (locationRecieved) {
-            fetch('/api/addOurTag', {
-                method: "POST",
-                headers: { "Content-Type": "application/JSON" },
-                body: JSON.stringify(sendingBody)
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                searchPeopleWithSameIssue(encodedTag, setLocs);
-            })
-            .catch(err => { console.log("Failed to send data", err); });
-        } else {
-            alert("Cannot proceed, Allow Location from the settings of the browser");
-        }
+        // No need for another locationRecieved check here as it's checked above
+        fetch('/api/addOurTag', {
+            method: "POST",
+            headers: { "Content-Type": "application/JSON" },
+            body: JSON.stringify(sendingBody)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            searchPeopleWithSameIssue(encodedTag); // Re-fetch to update list
+        })
+        .catch(err => { console.log("Failed to send data", err); });
     }
 
-    useEffect(() => {
-        setShowButton(optionValue.trim() !== "");
-    }, [optionValue]);
-
-    useEffect(() => {
-        if (timeValue.trim() !== "") {
-            setTimeout(() => {
-                setTellButton(true);
-            }, 450);
-        } else {
-            setTellButton(false);
-        }
-    }, [timeValue]);
+    // The useEffects that set showButton and tellButton are now in ActionButtonsController
 
     return (
-
         <div className="bg-white rounded-2xl shadow-lg p-6 w-full mt-16">
             <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">
-            What key challenge are you facing currently?
+                What key challenge are you facing currently?
             </h4>
 
-            <h6 className="text-xs text-gray-600 mb-2"> SoulUp currently allows you to only add only 1 challenge in {window} hours to prevent misuse of the geotagging feature.</h6>
+            <h6 className="text-xs text-gray-600 mb-2">
+                SoulUp currently allows you to only add only 1 challenge in {windowPeriod} hours to prevent misuse of the geotagging feature.
+            </h6>
 
             <div className="flex flex-col gap-4">
                 <SelectDropdown
@@ -172,31 +164,29 @@ const Select = () => {
                     <TimeDropdown
                         timeValue={timeValue}
                         setTimeValue={setTimeValue}
-                        originalLocs={originalLocs} // Pass the original data
+                        originalLocs={originalLocs}
                     />
                 )}
-                {show &&<p className="text-sm">Found {count} other's like you, {originalLocs.length} within your city</p>}
+                {show && <p className="text-sm">Found {count} other's like you, {originalLocs.length} within your city</p>}
 
-                <Buttons
-                    showButton={showButton}
-                    tellButton={tellButton}
-                    handleFirstButton={handleFirstButton}
-                    handleTellPeople={handleTellPeople}
+                <ActionButtonsController
+                    optionValue={optionValue}
+                    timeValue={timeValue}
+                    onSearchClick={handleSearchAction}
+                    onTellPeopleClick={handleTellPeopleAction}
                 />
-                
             </div>
 
-        <div className="bg-white rounded-2xl shadow-lg w-full mt-6 ">
-            {showSurvey && <SurveyBox onClose={() => setShowSurvey(false)} />}
+            <div className="bg-white rounded-2xl shadow-lg w-full mt-6">
+                {showSurvey && <SurveyBox onClose={() => setShowSurvey(false)} />}
+            </div>
+            <div className="flex flex-row items-center mt-4"> {/* Added items-center for vertical alignment */}
+                <img src="cluster.png" className="w-16 h-16 mr-3" alt="Map cluster icon"></img> {/* Added alt text & ensure fixed size */}
+                <p className="text-xs text-start">
+                    These blue and red circles show there are that no. of people in that area
+                </p>
+            </div>
         </div>
-        <div className="flex flex-row">
-                <img src="cluster.png" className="w-16 mr-3"></img>
-                <p className="text-xs text-start">these blue and red circle shows there are that no. of people in that area</p>
-                </div>
-            {/* Show Survey Box separately when triggered */}
-        </div>
-
-
     );
 };
 

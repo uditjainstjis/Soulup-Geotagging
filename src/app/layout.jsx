@@ -35,6 +35,7 @@ export default function RootLayout({children}) {
 
       <SessionWrapper>
     <body>
+
       {children}
       {/* I am layout */}
     </body>
