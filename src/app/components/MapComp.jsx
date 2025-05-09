@@ -64,6 +64,28 @@ const MapComp = () => {
 
       try {
         // --- Step 1: Check user details (Sequential) ---
+        
+        // --- Step 2: Fetch the first chunk to get total count (Sequential) ---
+        console.log(`Fetching: Fetching initial chunk: skip=0, limit=${locationsPerChunk}`);
+        const initialRes = await fetch(`/api/Loc?skip=0&limit=${locationsPerChunk}`);
+        if (!isMounted.current) return;
+        
+        if (!initialRes.ok) {
+          if (initialRes.status === 401) {
+            console.warn("Fetching: Received 401 Unauthorized on initial fetch. Redirecting.");
+            if (!redirected.current) {
+              redirected.current = true;
+              router.push('/signin');
+            }
+            setIsLoading(false);
+            return;
+          } else {
+            const errorData = await initialRes.json().catch(() => ({ message: 'Failed to parse error' }));
+            console.error("Fetching: Initial fetch failed:", errorData);
+            throw new Error(`Failed to fetch initial location chunk (status ${initialRes.status}): ${errorData.error || errorData.message || initialRes.statusText}`);
+          }
+        }
+        
         console.log("Fetching: Checking user details...");
         const detailsCheckRes = await fetch('/api/userdetails');
         if (!isMounted.current) return;
@@ -81,27 +103,6 @@ const MapComp = () => {
             return;
         }
         console.log("Fetching: User details complete.");
-
-        // --- Step 2: Fetch the first chunk to get total count (Sequential) ---
-        console.log(`Fetching: Fetching initial chunk: skip=0, limit=${locationsPerChunk}`);
-        const initialRes = await fetch(`/api/Loc?skip=0&limit=${locationsPerChunk}`);
-        if (!isMounted.current) return;
-
-        if (!initialRes.ok) {
-            if (initialRes.status === 401) {
-              console.warn("Fetching: Received 401 Unauthorized on initial fetch. Redirecting.");
-              if (!redirected.current) {
-                redirected.current = true;
-                router.push('/signin');
-              }
-              setIsLoading(false);
-              return;
-            } else {
-               const errorData = await initialRes.json().catch(() => ({ message: 'Failed to parse error' }));
-               console.error("Fetching: Initial fetch failed:", errorData);
-               throw new Error(`Failed to fetch initial location chunk (status ${initialRes.status}): ${errorData.error || errorData.message || initialRes.statusText}`);
-            }
-        }
 
         const initialData = await initialRes.json();
         if (!isMounted.current) return;

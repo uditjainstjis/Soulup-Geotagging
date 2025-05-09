@@ -14,3 +14,10 @@ body {
   }
 }
 
+
+.fontthin{
+  font-weight: 200;
+}
+*{
+  scroll-behavior: smooth;
+}
