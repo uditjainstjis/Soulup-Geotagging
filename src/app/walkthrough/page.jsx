@@ -23,7 +23,6 @@ export default function SoulUpMaps() {
             <div className="bg-gray-100 h-[50vh] md:h-[60vh] lg:h-[75vh] relative overflow-hidden">
               <div className="absolute inset-0 flex items-center justify-center">
               <iframe className='w-full h-full' src="https://www.youtube.com/embed/npWFKa9hYl4?si=FRdp-xDK1RH1owxp" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
-              
                 {/* <Image 
                   src='/image.png' 
                   fill 
