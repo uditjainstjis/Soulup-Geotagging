@@ -25,7 +25,7 @@ const SuccessPopup = ({ onClose, onUndo }) => {
                         {/* Check icon (using unicode emoji for simplicity, replace with Image if needed) */}
                         <span className="text-yellow-500 mr-3 text-xl flex-shrink-0">✅</span>
                         <p className="flex-1">
-                            Your location has been marked on the map along with your name, age, gender against the label 'Loneliness'
+                            Your location has been marked on the map along with your name, age, gender against the label Loneliness
                         </p>
                     </div>
                     <div className="flex items-start">

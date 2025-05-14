@@ -205,7 +205,7 @@ const SurveyPopup = ({ onClose }) => {
             <div className="bg-white rounded-2xl shadow-lg max-w-md w-full relative overflow-hidden">
                 {/* Header with poll title */}
                 <div className="bg-yellow-300 py-3 px-6 text-center">
-                    <h3 className="text-xl font-bold text-gray-800">TODAY'S POLL</h3>
+                    <h3 className="text-xl font-bold text-gray-800">TODAYS POLL</h3>
                 </div>
                 
                 {/* Close button */}
@@ -223,7 +223,7 @@ const SurveyPopup = ({ onClose }) => {
                     
                     {displayTag && (
                         <p className="text-lg text-gray-600 italic mb-8">
-                            The tag '{displayTag}' will be added to your location if you click YES
+                            The tag {displayTag} will be added to your location if you click YES
                         </p>
                     )}
                     

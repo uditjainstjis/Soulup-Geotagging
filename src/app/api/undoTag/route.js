@@ -3,7 +3,6 @@
 
 import { NextResponse } from "next/server";
 import Location from "../../../models/location"; // Adjust path as needed
-import User from "../../../models/user"; // Import User model to potentially reset timestamp
 import mongoose from "mongoose"; // Import mongoose to use ObjectId
 import { connectToDatabase } from "../../../lib/mongodb"; // Adjust path as needed
 import { getServerSession } from "next-auth";
