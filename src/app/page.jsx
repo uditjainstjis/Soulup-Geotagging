@@ -24,15 +24,13 @@ export default function Home() {
         <div className="min-h-screen flex flex-col bg-white"> {/* Overall page container */}
           <Navbar />
           {/* Main Content Area */}
-          <main className="flex-grow container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+          <main className="flex-grow container mt-8 py-8 px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row gap-8">
 
               {/* Left Column: Controls */}
-              <div className="lg:w-[350px] xl:w-[400px] flex-shrink-0 space-y-6">
-                <h1 className="text-3xl font-bold text-slate-800">SoulUp Maps</h1>
-                <p className="text-slate-600 text-lg">
-                  Connect with others facing similar challenges nearby.
-                </p>
+              <div className=" flex-shrink-0 ml-8 space-y-4">
+                <h1 className="text-4xl font-bold tracking-wide font-sans  text-slate-800">SoulUp Maps</h1>
+                <h2 className="text-2xl  tracking-wider font-sans   text-slate-800">What key challenge's are you facing currently?</h2>
 
                 {/*
                   The Select component (your refactored main component) goes here.
@@ -61,16 +59,21 @@ export default function Home() {
               </div>
 
               {/* Right Column: Map */}
-              <div className="flex-grow bg-rose-50 p-1 rounded-lg shadow-lg min-h-[60vh] lg:min-h-0">
-                <div className="w-full h-full rounded-md overflow-hidden">
+              <div className="flex-grow  shadow-around md:min-h-[60vh] lg:min-h-0">
+                <div className="w-full h-full overflow-hidden">
                   <MapComp />
                 </div>
               </div>
             </div>
           </main>
 
+          <div className="flex flex-row ml-[5vw]">
+                <img src="cluster.png" className="w-16 mr-3"></img>
+                <p className="text-xs text-start">these blue and red circle shows there are that no. of people in that area</p>
+                </div>
+
           {/* Footer */}
-          <footer className="py-4">
+          <footer className="py-2">
             <p className="text-xs text-gray-500 text-center">
               By using this site, you agree to our <a href="/privacy-policy" target='_blank' className="underline hover:text-gray-700">Privacy Policy</a>.
             </p>

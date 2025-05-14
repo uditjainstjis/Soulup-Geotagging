@@ -203,6 +203,14 @@ export default function SoulUpMaps() {
             )}
           </div>
 
+          
+          <div>
+            <h3 className='text-sm font-sans text-red-400 italic'>This is the link others can use to contact you if they have a
+common challenge.</h3>
+<h3 className='text-sm font-sans text-red-400 italic mb-3'>
+You can give your LinkedIn/Instagram link. <span className="text-red-500 font-sans font-bold">If you are a SoulUp Peer</span>, please give your SoulUp Peer Profile link</h3>
+          </div>
+
           <div className="flex justify-end">
             <button
               type="submit"

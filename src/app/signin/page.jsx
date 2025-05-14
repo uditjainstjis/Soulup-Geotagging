@@ -83,7 +83,7 @@ export default function SoulUpMaps() {
                 className={`px-4 py-3 md:px-6 md:py-4 text-lg md:text-xl font-bold rounded-full transition-colors duration-200 ${
                   showWalkthrough
                     ? "bg-gray-800 text-white" // Active state for Walkthrough
-                    : "bg-yellow-300 text-gray-800 hover:bg-yellow-400"
+                    : "bg-yellow-300 text-gray-800 hover:bg-yellow"
                 }`}
                 onClick={handleWalkthroughClick}
               >
@@ -195,7 +195,7 @@ export default function SoulUpMaps() {
               e.preventDefault();
               document.getElementById('login')?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="inline-block bg-yellow-300 hover:bg-yellow-400 px-6 md:px-8 py-3 rounded-full font-medium"
+            className="inline-block bg-yellow-300 hover:bg-yellow px-6 md:px-8 py-3 rounded-full font-medium"
           >
             Login/SignUp
           </a>

@@ -51,7 +51,7 @@ const SelectDropdown = ({ optionValue, setOptionValue, isDisabled }) => {
                 value={optionValue}
                 disabled={isDisabled}
                 onChange={(e) => setOptionValue(e.target.value)}
-                className="block w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
+                className="block w-full border border-gray-300 h-[3.7rem] shadow-lg  text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
             >
                 <option value="" disabled>
                     Select an option

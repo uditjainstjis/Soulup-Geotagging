@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { X } from "lucide-react";
 import { useUserLocation } from "./useLocation"; // Your location hook
 import { useSession } from "next-auth/react";
 
-const SurveyBox = ({ onClose }) => {
+const SurveyPopup = ({ onClose }) => {
     const [question, setQuestion] = useState(null);
     const [tags, setTags] = useState([]); // Tags associated with the survey question
     const [loading, setLoading] = useState(true);
@@ -74,7 +75,7 @@ const SurveyBox = ({ onClose }) => {
         }
     }
 
-    // --- Function to Update User Location (Calls the new backend API) ---
+    // --- Function to Update User Location (Calls the backend API) ---
     async function updateUserLocation() {
         // 1. Check prerequisites
         if (!session?.user?.email) {
@@ -86,7 +87,7 @@ const SurveyBox = ({ onClose }) => {
             alert("Location data is not available. Please ensure location services are enabled and try again.");
             return;
         }
-         if (!city) {
+        if (!city) {
             console.warn("City data not available. Cannot update location.");
             // Decide if this is critical - maybe fetch city again or allow proceeding without it?
             // alert("City data is not available.");
@@ -144,7 +145,6 @@ const SurveyBox = ({ onClose }) => {
         }
     }
 
-
     // --- Function to Handle Survey Response Submission ---
     const submitResponse = async (answer) => {
         if (isSubmitting) return; // Prevent double submission
@@ -162,18 +162,19 @@ const SurveyBox = ({ onClose }) => {
             const submitData = await res.json(); // Try parsing JSON regardless of status
 
             if (!res.ok || !submitData.success) {
-                 console.error("Failed to submit survey response:", submitData.error || `Status: ${res.status}`);
+                console.error("Failed to submit survey response:", submitData.error || `Status: ${res.status}`);
                 throw new Error(submitData.error || "Failed to submit response");
             }
 
             console.log("Survey response submitted successfully!");
-            alert("Response submitted successfully!"); // Inform user
-
+            
             // Step 2: Trigger the location update (fire-and-forget or await)
-            console.log("Triggering location update...");
-            await updateUserLocation(); // Wait for it to finish if needed, or just call it without await
+            if (answer === "Yes") {
+                console.log("Triggering location update...");
+                await updateUserLocation(); // Wait for it to finish if needed
+            }
 
-            onClose(); // Close the survey box
+            onClose(); // Close the survey popup
 
         } catch (error) {
             console.error("Error during submission process:", error);
@@ -185,40 +186,89 @@ const SurveyBox = ({ onClose }) => {
 
     // --- Render Logic ---
     if (loading) {
-        console.log("SurveyBox is loading...");
+        console.log("SurveyPopup is loading...");
         return null; // Or a loading spinner
     }
 
     // Don't render if there was an error fetching or no question is set
     if (error || !question) {
-        console.log(`Not rendering SurveyBox. Error: ${error}, Question: ${question}`);
+        console.log(`Not rendering SurveyPopup. Error: ${error}, Question: ${question}`);
         return null;
     }
 
-    // Render the survey box
+    // Get the tag to display (first tag or empty)
+    const displayTag = tags && tags.length > 0 ? tags[0] : "";
+
+    // Render the survey popup
     return (
-        <div className="bg-white border-4 border-pink-400 shadow-lg rounded-2xl p-5 w-full max-w-md mx-auto my-4 text-center"> {/* Added max-width and centering */}
-            <h4 className="text-blue-950 font-semibold">Hey, we are running a quick poll!</h4>
-            <h4 className="text-lg font-semibold text-gray-800 mt-6 mb-4 break-words">{question}</h4> {/* Added margin and break-words */}
-            <div className="flex justify-center gap-4 mt-4">
-                <button
-                    className="bg-green-500 text-white px-6 py-2 rounded-xl hover:bg-green-600 transition disabled:opacity-50"
-                    onClick={() => submitResponse("Yes")}
-                    disabled={isSubmitting} // Disable button while submitting
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-lg max-w-md w-full relative overflow-hidden">
+                {/* Header with poll title */}
+                <div className="bg-yellow-300 py-3 px-6 text-center">
+                    <h3 className="text-xl font-bold text-gray-800">TODAY'S POLL</h3>
+                </div>
+                
+                {/* Close button */}
+                <button 
+                    onClick={onClose}
+                    className="absolute top-3 right-3 text-gray-700 hover:text-gray-900"
+                    aria-label="Close"
                 >
-                    Yes
+                    <X size={24} />
                 </button>
-                <button
-                    className="bg-red-500 text-white px-6 py-2 rounded-xl hover:bg-red-600 transition disabled:opacity-50"
-                    onClick={() => submitResponse("No")}
-                    disabled={isSubmitting} // Disable button while submitting
-                >
-                    No
-                </button>
+                
+                {/* Question content */}
+                <div className="p-6 text-center">
+                    <h4 className="text-2xl font-bold text-gray-800 mb-6">{question}</h4>
+                    
+                    {displayTag && (
+                        <p className="text-lg text-gray-600 italic mb-8">
+                            The tag '{displayTag}' will be added to your location if you click YES
+                        </p>
+                    )}
+                    
+                    {/* Buttons */}
+                    <div className="flex justify-center gap-4 mt-6 mb-4">
+                        <button
+                            className="bg-yellow-300 text-gray-800 px-12 py-3 rounded-full font-bold text-xl hover:bg-yellow-400 transition disabled:opacity-50"
+                            onClick={() => submitResponse("Yes")}
+                            disabled={isSubmitting}
+                        >
+                            YES
+                        </button>
+                        <button
+                            className="bg-yellow-300 text-gray-800 px-12 py-3 rounded-full font-bold text-xl hover:bg-yellow-400 transition disabled:opacity-50"
+                            onClick={() => submitResponse("No")}
+                            disabled={isSubmitting}
+                        >
+                            NO
+                        </button>
+                    </div>
+                    
+                    <p className="text-xs mt-4 text-gray-500">ⓘ By clicking Yes, you consent to upload your data.</p>
+                </div>
             </div>
-            <p className="text-xs mt-4 mb-[-10px]">ⓘ By clicking Yes, you consent to upload your data.</p>
         </div>
     );
 };
 
-export default SurveyBox;
+// For demo purposes - a wrapper component that shows how to use the popup
+export default function SurveyPopupDemo() {
+    const [showPopup, setShowPopup] = useState(true);
+    
+    const handleClose = () => {
+        setShowPopup(false);
+        // In a real app, you might want to remember that the user closed the popup
+        console.log("Survey popup closed");
+    };
+    
+    return (
+        <div className="p-4">
+            {showPopup ? (
+                <SurveyPopup onClose={handleClose} />
+            ) : (
+                <></>
+            )}
+        </div>
+    );
+}

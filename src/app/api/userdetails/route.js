@@ -22,20 +22,29 @@ export async function GET(req) {
       );
     }
 
-    const userEmail = session.user.email;
+    const { email, name, image } = session.user;
 
-    // Fetch user details based on email
-    const user = await User.findOne({ email: userEmail });
+    // Check if user already exists in DB
+    let user = await User.findOne({ email });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      // Calculate timestamp as 2 days before now
+      const twoDaysAgo = new Date();
+      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+      // Create user with session data and adjusted timestamp
+      user = await User.create({
+        email,
+        name: name || "Unnamed User",
+        profilePhoto: image || "",
+        timestamp: twoDaysAgo,
+      });
     }
 
-    // Return user details
     return NextResponse.json(user);
 
   } catch (error) {
-    console.error("Error fetching user details:", error);
-    return NextResponse.json({ error: 'Failed to fetch user details' }, { status: 500 });
+    console.error("Error handling user GET:", error);
+    return NextResponse.json({ error: 'Failed to fetch or create user' }, { status: 500 });
   }
 }

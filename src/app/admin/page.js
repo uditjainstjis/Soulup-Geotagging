@@ -149,7 +149,7 @@ const AdminSurveyPanel = () => {
     if (!authenticated) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-400 to-purple-500 p-6">
-                <div className="bg-white shadow-lg rounded-xl p-8 max-w-md w-full text-center">
+                <div className="bg-white shadow-around rounded-xl p-8 max-w-md w-full text-center">
                     <h2 className="text-2xl font-semibold text-gray-800 mb-4">Admin Login</h2>
                     <input
                         type="password"

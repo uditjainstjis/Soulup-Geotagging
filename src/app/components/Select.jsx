@@ -1,69 +1,116 @@
-// ./Select.js (Modified)
-import React, { useContext, useEffect, useState } from "react";
+import React, { use, useContext, useEffect, useState } from "react";
 import { useUserLocation } from "./useLocation";
 import TimeDropdown from "./TimeDropdown";
-// import Buttons from "./buttons"; // No longer directly imported here
-import SelectDropdown from "./SelectDropdown";
-import { MainLocations } from "./contexts";
-import SurveyBox from "./SurveyBox";
-import { useSession } from "next-auth/react";
-import ActionButtonsController from "./ActionButtonsController"; // Import the new component
+import Buttons from "./buttons"; // Make sure this path is correct
+import SelectDropdown from "./SelectDropdown"; // Make sure this path is correct
+import { MainLocations } from "./contexts"; // Make sure this path is correct
+import SurveyBox from "./SurveyBox"; // Make sure this path is correct
+import { useSession } from "next-auth/react"; // Make sure this path is correct
+import Image from "next/image";
+import SuccessPopup from "./SuccessPopup"; // Make sure this path is correct
+import RateLimitPopup from "./RateLimitPopup"; // Make sure this path is correct
+
 
 const Select = () => {
-    const { Locs, setLocs } = useContext(MainLocations); // 'Locs' is declared but not used. Consider removing if not needed.
+    var { Locs, setLocs } = useContext(MainLocations);
 
-    const [show, setShow] = useState(false);
-    const [count, setCount] = useState(null);
-    const [isDisabled, setisDisabled] = useState(false);
-    const [optionValue, setOptionValue] = useState("");
-    const [timeValue, setTimeValue] = useState("");
-    const [showSurvey, setShowSurvey] = useState(false);
-    const [userDetails, setUserDetails] = useState(null);
-    const { data: session } = useSession();
+    const [showButton, setShowButton] = useState(false); // Controls visibility of the first button ("Search")
+    const [tellButton, setTellButton] = useState(false); // Controls visibility of the second button ("Tell People")
+    const [show, setShow] = useState(false); // Controls visibility of search results & TimeDropdown
+    const [count, setCount] = useState(null)
+    const [isDisabled, setisDisabled] = useState(false); // Disables the dropdown after clicking Search
+    const [optionValue, setOptionValue] = useState(""); // Selected challenge tag
+    const [timeValue, setTimeValue] = useState(""); // Selected time for visibility
 
-    const [windowPeriod, setWindowPeriod] = useState(24); // Renamed from 'window' to avoid conflict
+    const [showSurvey, setShowSurvey] = useState(false); // Track survey visibility
+    const [userDetails, setUserDetails] = useState(null); // State to store user details
+    const { data: session } = useSession(); // Get session for email
 
+    const [window, setWindow] = useState(24)
+
+    // State for the custom popups
+    const [showRateLimitPopup, setShowRateLimitPopup] = useState(false);
+    const [rateLimitMessage, setRateLimitMessage] = useState("");
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
+    // State to store the details of the tag that was just added for undo functionality
+    const [lastAddedTagDetails, setLastAddedTagDetails] = useState(null); // Store { tagId, tag }
+
+
+    // Log initial state on mount
     useEffect(() => {
-        async function call() {
-            const response = await fetch('/api/hourSize');
-            const data = await response.json();
-            setWindowPeriod(data.windowWidth);
+        console.log("--- Component Initialized ---");
+        console.log("Initial State: { showButton:", showButton, ", tellButton:", tellButton, ", show:", show, ", isDisabled:", isDisabled, ", optionValue:", optionValue, ", timeValue:", timeValue, "}");
+    }, []); // Runs only once on mount
+
+
+    // Fetch window width on mount
+    useEffect(()=>{
+        async function call(){
+            try {
+                const response = await fetch('/api/hourSize');
+                if(response.ok) {
+                    const data = await response.json();
+                    console.log("Fetched hour size:", data.windowWidth);
+                    setWindow(data.windowWidth);
+                } else {
+                    console.error("Failed to fetch hour size");
+                    setWindow(24); // Default fallback
+                }
+            } catch (error) {
+                console.error("Error fetching hour size:", error);
+                setWindow(24); // Default fallback
+            }
         }
         call();
     }, []);
 
     const { location, locationRecieved, city } = useUserLocation();
-    const [originalLocs, setOriginalLocs] = useState([]);
+    const [originalLocs, setOriginalLocs] = useState([]); // Store unfiltered locations
 
-    async function searchPeopleWithSameIssue(encodedTag) { // setLocs is already available from context
-        try {
-            const response = await fetch(
-                `/api/Search-People-With-Same-Issue?tag=${encodedTag}&city=${city}`,
-                { method: "GET" }
-            );
+    // Function to search for people with the same issue
+    async function searchPeopleWithSameIssue(encodedTag, setLocs) {
+       console.log("--- Calling searchPeopleWithSameIssue ---");
+       console.log("Searching for tag:", decodeURIComponent(encodedTag), "in city:", city);
+       try {
+           const response = await fetch(
+               `api/Search-People-With-Same-Issue?tag=${encodedTag}&city=${city}`,
+               { method: "GET" }
+           );
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log("Fetched Data:", data);
-                setLocs(data.locations);
-                setCount(data.count);
-                setOriginalLocs(data.locations);
-            } else {
-                const errorData = await response.json();
-                console.error("Error response:", errorData);
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("An error occurred while searching. Please try again later.");
-        }
+           if (response.ok) {
+               const data = await response.json();
+               console.log("Fetched Search Data:", data);
+
+               setLocs(data.locations);
+               setCount(data.count);
+               setOriginalLocs(data.locations); // Store the original full list for resetting
+           } else {
+               const errorData = await response.json();
+               console.error("Error response from search:", errorData);
+                setLocs([]);
+                setCount(0);
+                setOriginalLocs([]);
+                console.warn(errorData.message || "Failed to search for people.");
+           }
+       } catch (error) {
+           console.error("Error during search:", error);
+            setLocs([]);
+            setCount(0);
+            setOriginalLocs([]);
+            console.error("An error occurred while searching.", error);
+       }
     }
 
+    // Function to fetch user details
     async function fetchUserDetails() {
+        console.log("--- Fetching user details ---");
         try {
             const response = await fetch('/api/userdetails');
             if (response.ok) {
                 const data = await response.json();
-                setUserDetails(data); // Store for potential reuse
+                setUserDetails(data);
+                 console.log("User details fetched.");
                 return data;
             } else {
                 console.error("Failed to fetch user details");
@@ -75,117 +122,278 @@ const Select = () => {
         }
     }
 
-    // Renamed for clarity when passing as prop
-    function handleSearchAction() {
-        setShow(true);
-        setisDisabled(true);
-        // setShowButton(false); // This logic is now in ActionButtonsController
-        // setTellButton(true);  // This logic is now in ActionButtonsController (based on timeValue)
+    // Handler for the first button ("Search")
+    function handleFirstButton() {
+        console.log("--- handleFirstButton clicked ---");
+        console.log("State before handleFirstButton:", { show, isDisabled, showButton, tellButton });
 
         const encodedTag = encodeURIComponent(optionValue);
-        if (optionValue.trim() !== "") {
-            searchPeopleWithSameIssue(encodedTag);
-
-            setTimeout(() => {
-                setShowSurvey(true);
-            }, 2000);
-        } else {
-            alert("Select some option to search for that");
+        if (optionValue.trim() === "") {
+            alert("Select a challenge before searching."); // Keep this alert for validation
+            return; // Stop execution if validation fails
         }
+
+        // State updates after successful validation
+        setShow(true); // Show search results and time dropdown
+        setisDisabled(true); // Disable the challenge dropdown
+        setShowButton(false); // Hide the "Search" button
+        setTellButton(true)
+
+        console.log("State updates initiated by handleFirstButton:", { show: true, isDisabled: true, showButton: false });
+
+
+        searchPeopleWithSameIssue(encodedTag, setLocs);
+
+        // Show the survey box after 2 seconds (Keep this if needed)
+        setTimeout(() => {
+            setShowSurvey(true); console.log("Showing survey");
+        }, 2000);
+
     }
 
-    // Renamed for clarity when passing as prop
-    async function handleTellPeopleAction() {
+    // --- Function to handle the undo action ---
+    async function handleUndoClick() {
+        console.log("--- handleUndoClick clicked ---");
+        // Check if we have the details (specifically the tagId) of the last added tag
+        if (!lastAddedTagDetails || !lastAddedTagDetails.tagId) {
+            console.error("No tag ID available to undo. State:", lastAddedTagDetails);
+             setShowSuccessPopup(false); // Close popup anyway if state is missing/invalid
+            alert("Cannot undo: Information about the last added tag is missing.");
+            return;
+        }
+
+        // Get the tag ID and name from the stored state
+        const { tagId, tag: tagName } = lastAddedTagDetails;
+        console.log("Attempting undo for tagId:", tagId, "tag:", tagName);
+
+        try {
+            const response = await fetch('/api/undoTag', {
+                method: 'DELETE', // Use DELETE method for deletion
+                headers: { "Content-Type": "application/JSON" },
+                body: JSON.stringify({
+                    tagId: tagId, // Send the tag ID to the backend
+                }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Undo success:", data.message);
+
+                // Refresh the map/search results after successful undo
+                // Use the stored tag name to refresh the search for that tag
+                const encodedTag = encodeURIComponent(tagName || optionValue); // Fallback to current optionValue
+                searchPeopleWithSameIssue(encodedTag, setLocs);
+
+                // Clear the stored tag details as it's now undone
+                setLastAddedTagDetails(null);
+                console.log("Cleared lastAddedTagDetails after successful undo.");
+
+
+            } else {
+                const errorData = await response.json();
+                console.error("Undo failed:", errorData.message);
+                alert(errorData.message || "Failed to undo the tag.");
+            }
+        } catch (err) {
+            console.error("Error during undo fetch:", err);
+            alert("An error occurred while trying to undo. Please try again.");
+        } finally {
+             // Always close the success popup after the undo attempt (success or fail)
+             console.log("Closing success popup after undo attempt.");
+             setShowSuccessPopup(false);
+        }
+    }
+    // --- End Undo function ---
+
+
+    // Handler for the second button ("Tell People")
+    async function handleTellPeople() {
+        console.log("--- handleTellPeople clicked ---");
+        // Basic validation
         if (!session?.user?.email) {
             alert("User email not found in session. Please ensure you are logged in.");
             return;
         }
-
-        // Attempt to use already fetched details, or fetch them if not available
-        const details = userDetails || await fetchUserDetails();
-
-        if (!details) {
-            alert("Failed to fetch user details. Please try again.");
+        if (!locationRecieved || !location?.latitude || !location?.longitude) {
+            alert("Cannot proceed, please allow Location access in your browser settings.");
             return;
         }
-        
-        if (!locationRecieved || !location || !city) {
-            alert("Location data is not available. Please enable location services or wait for it to be determined.");
+         if (optionValue.trim() === "") {
+            alert("Please select a challenge first.");
             return;
         }
+
+        console.log("Validation passed for handleTellPeople. Proceeding with fetch.");
+        const userDetailsData = await fetchUserDetails(); // Fetch user details here
+
 
         const sendingBody = {
             city: city,
-            tag: optionValue,
+            tag: optionValue, // Use the currently selected tag
             location: { lat: location.latitude, lng: location.longitude },
-            email: session.user.email,
-            gender: details?.gender || null,
-            ageBracket: details?.ageBracket || null,
-            socialProfile: details?.socialProfile || null,
+            email: session.user.email, // Include email for backend identification
+            name: session.user.name, // Include name if your backend uses it
+            gender: userDetailsData?.gender || null,
+            ageBracket: userDetailsData?.ageBracket || null,
+            socialProfile: userDetailsData?.socialProfile || null,
             profilePhoto: session?.user?.image || null,
         };
-        const encodedTag = encodeURIComponent(optionValue);
-        console.log("I am sending this", sendingBody);
 
-        // No need for another locationRecieved check here as it's checked above
+        console.log("Attempting to send tag:", sendingBody);
+
+
         fetch('/api/addOurTag', {
             method: "POST",
             headers: { "Content-Type": "application/JSON" },
             body: JSON.stringify(sendingBody)
         })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-            searchPeopleWithSameIssue(encodedTag); // Re-fetch to update list
+        .then(response => {
+            // Handle non-OK responses (rate limit, other errors)
+            if (!response.ok) {
+                 return response.json().then(data => {
+                     const error = new Error(data.message || `API error: ${response.status}`);
+                     error.status = response.status; // Attach status
+                     error.messageContent = data.message; // Store message content
+                     error.isRateLimit = (response.status === 429); // Flag rate limit specifically
+                     throw error; // Throw the error to the catch block
+                 });
+            }
+             // If response is OK, parse JSON
+            return response.json();
         })
-        .catch(err => { console.log("Failed to send data", err); });
+        .then(data => {
+            // This block is only reached if the response was OK (status 2xx)
+            console.log("Add tag success:", data);
+
+            // Store the received tagId and tag name for undo
+            if (data.tagId) {
+                 setLastAddedTagDetails({ tagId: data.tagId, tag: optionValue }); // Store received ID and the tag name
+                 console.log("Stored for undo:", { tagId: data.tagId, tag: optionValue });
+            } else {
+                 console.warn("API did not return tagId. Undo functionality might not work.");
+                 setLastAddedTagDetails(null); // Clear state if ID is missing
+            }
+
+            // Show the success popup
+            setShowSuccessPopup(true);
+            console.log("Showing success popup");
+
+
+            // Since the tag was added, refresh the search results
+            const encodedTag = encodeURIComponent(optionValue);
+            searchPeopleWithSameIssue(encodedTag, setLocs);
+        })
+        .catch(err => {
+            console.error("Failed to send data", err);
+            // Handle errors caught from the promise chain
+            if (err.isRateLimit) {
+                setRateLimitMessage(err.messageContent || "Sorry, you are doing this too often.");
+                setShowRateLimitPopup(true);
+                console.log("Showing rate limit popup.");
+            } else {
+                 // Show a generic error for other failures
+                alert(err.messageContent || err.message || "An error occurred while adding your challenge. Please try again.");
+            }
+             // Clear lastAddedTagDetails on failure, as no tag was successfully added
+             setLastAddedTagDetails(null); // IMPORTANT: Clear state on failure
+             console.log("Cleared lastAddedTagDetails on failure.");
+        });
     }
 
-    // The useEffects that set showButton and tellButton are now in ActionButtonsController
+    // Effect to control the visibility of the first button ("Search")
+    // It shows when a challenge option is selected and the dropdown is not disabled
+    useEffect(() => {
+        const shouldShow = optionValue.trim() !== "" && !isDisabled;
+        console.log(`Effect [optionValue, isDisabled]: optionValue='${optionValue}', isDisabled=${isDisabled} -> Setting showButton=${shouldShow}`);
+        setShowButton(shouldShow);
+    }, [optionValue, isDisabled]);
+
+
+    // Effect to control the visibility of the second button ("Tell People")
+    // This shows when time is selected AND the first button has been clicked (show is true)
+    useEffect(() => {
+        const shouldShow = show && timeValue.trim() !== "";
+        console.log(`Effect [timeValue, show]: timeValue='${timeValue}', show=${show} -> Setting tellButton=${shouldShow}`);
+        // setTellButton(shouldShow);
+    }, [timeValue, show]);
+
+
+    // Effect to log state changes relevant to rendering for debugging
+    useEffect(() => {
+         console.log(`RENDER STATE: showButton=${showButton}, tellButton=${tellButton}, show=${show}, isDisabled=${isDisabled}`);
+    }, [showButton, tellButton, show, isDisabled]);
+
 
     return (
-        <div className="bg-white rounded-2xl shadow-lg p-6 w-full mt-16">
-            <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">
-                What key challenge are you facing currently?
-            </h4>
-
-            <h6 className="text-xs text-gray-600 mb-2">
-                SoulUp currently allows you to only add only 1 challenge in {windowPeriod} hours to prevent misuse of the geotagging feature.
-            </h6>
-
-            <div className="flex flex-col gap-4">
+        <div className=" w-full ">
+            {/* Main form/selection area */}
+            <div className="flex flex-col gap-4 text-xl font-bold bg-white rounded-xl p-4"> {/* Added padding */}
                 <SelectDropdown
                     optionValue={optionValue}
                     setOptionValue={setOptionValue}
                     isDisabled={isDisabled}
                 />
 
+                {/* Show TimeDropdown and search results only if 'show' is true */}
                 {show && (
-                    <TimeDropdown
-                        timeValue={timeValue}
-                        setTimeValue={setTimeValue}
-                        originalLocs={originalLocs}
-                    />
+                    <>
+                        <TimeDropdown
+                            timeValue={timeValue}
+                            setTimeValue={setTimeValue}
+                            originalLocs={originalLocs} // Pass the original data
+                        />
+                        {/* Search results display block */}
+                        <div>
+                            <div className="flex justify-center items-center text-center mt-8">
+                                <div className="bg-yellow-500 rounded-full text-center flex items-center justify-center text-white w-32 h-10 mx-auto relative">YAY</div>
+                            </div>
+                            <div className="bg-white rounded-lg shadow-around pt-8">
+                                <h2 className="text-[1.30rem] text-center tracking-widest font-sans w-full max-w-md mx-auto break-words px-4">
+                                    We found <span className="underline">{count}</span> people solving the same challenge as you!
+                                </h2>
+                                <br/>
+                                <div className="flex flex-row gap-4 ml-2 items-center">
+                                    {/* Ensure you have an avatar.png in your public directory */}
+                                    <Image src='/avatar.png' className="ml-4 mb-6" width={35} height={35} alt="avatar" />
+                                    <span className="tracking-wider text-center font-sans font-light mb-6">{originalLocs.length} people found in your own city</span>
+                                </div>
+                            </div>
+                        </div>
+                    </>
                 )}
-                {show && <p className="text-sm">Found {count} other's like you, {originalLocs.length} within your city</p>}
 
-                <ActionButtonsController
-                    optionValue={optionValue}
-                    timeValue={timeValue}
-                    onSearchClick={handleSearchAction}
-                    onTellPeopleClick={handleTellPeopleAction}
+                {/* Buttons component - Pass visibility flags and handlers */}
+                {/* The Buttons component's internal logic determines which button to show based on showButton and tellButton */}
+                <Buttons
+                    showButton={showButton} // true when option selected & not disabled
+                    tellButton={tellButton} // true when time selected AND show is true
+                    handleFirstButton={handleFirstButton} // Search button handler
+                    handleTellPeople={handleTellPeople} // Tell People button handler
                 />
+
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg w-full mt-6">
-                {showSurvey && <SurveyBox onClose={() => setShowSurvey(false)} />}
-            </div>
-            <div className="flex flex-row items-center mt-4"> {/* Added items-center for vertical alignment */}
-                <img src="cluster.png" className="w-16 h-16 mr-3" alt="Map cluster icon"></img> {/* Added alt text & ensure fixed size */}
-                <p className="text-xs text-start">
-                    These blue and red circles show there are that no. of people in that area
-                </p>
-            </div>
+            {/* Survey Box */}
+             <div className="w-full mt-6 ">
+                 {showSurvey && <SurveyBox onClose={() => setShowSurvey(false)} />}
+             </div>
+
+
+            {/* Render the custom rate limit popup */}
+            {showRateLimitPopup && (
+                <RateLimitPopup
+                    message={rateLimitMessage}
+                    onClose={() => setShowRateLimitPopup(false)}
+                />
+            )}
+
+            {/* Render the new custom success popup */}
+            {showSuccessPopup && (
+                <SuccessPopup
+                    onClose={() => setShowSuccessPopup(false)} // Close button/backdrop handler
+                    onUndo={handleUndoClick} // Pass the undo handler
+                />
+            )}
         </div>
     );
 };
