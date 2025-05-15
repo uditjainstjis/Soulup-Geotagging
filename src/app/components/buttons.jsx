@@ -6,10 +6,10 @@ const Buttons = ({ showButton, tellButton, handleFirstButton, handleTellPeople }
             {showButton && (
                 <div className="flex flex-col  justify-end">
                     <button
-                        className="bg-yellow mt-3 rounded-full px-4 text-bold h-[3.25rem] w-full text-white self-end border-1 transition-transform duration-200 active:scale-95" // Added transition and active scale
+                        className="bg-yellow md:mt-3  rounded-full px-4 text-bold h-[3.25rem] w-full text-white self-end border-1 transition-transform duration-200 active:scale-95" // Added transition and active scale
                         onClick={handleFirstButton}
                     >
-                        Locate others like you
+                        Find others like you
                     </button>
                 </div>
             )}

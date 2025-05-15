@@ -32,6 +32,7 @@ const Select = () => {
     const [showRateLimitPopup, setShowRateLimitPopup] = useState(false);
     const [rateLimitMessage, setRateLimitMessage] = useState("");
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+    const [showCard, setShowCard] = useState(true);
 
     // State to store the details of the tag that was just added for undo functionality
     const [lastAddedTagDetails, setLastAddedTagDetails] = useState(null); // Store { tagId, tag }
@@ -327,7 +328,7 @@ const Select = () => {
     return (
         <div className=" w-full ">
             {/* Main form/selection area */}
-            <div className="flex flex-col gap-4 text-xl font-bold bg-white rounded-xl p-4"> {/* Added padding */}
+            <div className="flex flex-col gap-4 text-xl font-bold rounded-xl p-4"> {/* Added padding */}
                 <SelectDropdown
                     optionValue={optionValue}
                     setOptionValue={setOptionValue}
@@ -341,24 +342,53 @@ const Select = () => {
                             timeValue={timeValue}
                             setTimeValue={setTimeValue}
                             originalLocs={originalLocs} // Pass the original data
+                            setLocs={setLocs}
+                            Locs={Locs}
                         />
                         {/* Search results display block */}
-                        <div>
-                            <div className="flex justify-center items-center text-center mt-8">
-                                <div className="bg-yellow-500 rounded-full text-center flex items-center justify-center text-white w-32 h-10 mx-auto relative">YAY</div>
-                            </div>
-                            <div className="bg-white rounded-lg shadow-around pt-8">
-                                <h2 className="text-[1.30rem] text-center tracking-widest font-sans w-full max-w-md mx-auto break-words px-4">
-                                    We found <span className="underline">{count}</span> people solving the same challenge as you!
-                                </h2>
-                                <br/>
-                                <div className="flex flex-row gap-4 ml-2 items-center">
-                                    {/* Ensure you have an avatar.png in your public directory */}
-                                    <Image src='/avatar.png' className="ml-4 mb-6" width={35} height={35} alt="avatar" />
-                                    <span className="tracking-wider text-center font-sans font-light mb-6">{originalLocs.length} people found in your own city</span>
-                                </div>
-                            </div>
-                        </div>
+                        {showCard && (
+  <div className="relative">
+    <div className="absolute top-2 right-2 z-20 cursor-pointer" onClick={() => setShowCard(false)}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5 text-gray-500 hover:text-gray-700"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fillRule="evenodd"
+          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414
+          1.414L11.414 10l4.293 4.293a1 1 0 01-1.414
+          1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586
+          10 4.293 5.707a1 1 0 010-1.414z"
+          clipRule="evenodd"
+        />
+      </svg>
+    </div>
+
+    {/* Your Card Starts Here */}
+    <div className="relative flex justify-center items-center text-center mt-8">
+      <div className="bg-yellow-500 rounded-full text-center flex items-center justify-center text-white w-32 h-10 mx-auto absolute -bottom-5 z-10">
+        YAY
+      </div>
+    </div>
+
+    <div className="bg-white rounded-lg shadow-around pt-12 relative z-0">
+      <h2 className="text-[1.30rem] text-center tracking-widest font-sans w-full max-w-md mx-auto break-words px-4">
+        We found <span className="underline">{count}</span> people solving the same challenge as you!
+      </h2>
+      <br />
+      <div className="flex flex-row gap-4 ml-2 items-center">
+        <Image src='/avatar.png' className="ml-4 mb-6" width={35} height={35} alt="avatar" />
+        <span className="tracking-wider text-center font-sans font-light mb-6">
+          {originalLocs.length} people found in your own city
+        </span>
+      </div>
+    </div>
+  </div>
+)}
+
+
                     </>
                 )}
 

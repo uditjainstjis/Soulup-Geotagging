@@ -24,13 +24,13 @@ export default function Home() {
         <div className="min-h-screen flex flex-col bg-white"> {/* Overall page container */}
           <Navbar />
           {/* Main Content Area */}
-          <main className="flex-grow container mt-8 py-8 px-4 sm:px-6 lg:px-8">
+          <main className="flex-grow container md:mt-8 mt:py-8  sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row gap-8">
 
               {/* Left Column: Controls */}
-              <div className=" flex-shrink-0 ml-8 space-y-4">
-                <h1 className="text-4xl font-bold tracking-wide font-sans  text-slate-800">SoulUp Maps</h1>
-                <h2 className="text-2xl  tracking-wider font-sans   text-slate-800">What key challenge's are you facing currently?</h2>
+              <div className=" flex-shrink-0 md:ml-8 space-y-4 md:relative absolute z-10">
+                <h1 className="text-4xl font-bold tracking-wide md:block hidden font-sans  text-slate-800">SoulUp Maps</h1>
+                <h2 className="text-2xl  tracking-wider font-sans md:block hidden  text-slate-800">What key challenge's are you facing currently?</h2>
 
                 {/*
                   The Select component (your refactored main component) goes here.

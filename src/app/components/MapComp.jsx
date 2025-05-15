@@ -346,6 +346,13 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
                 className='md:h-[77vh] md:w-[57vw] w-[100vw] h-[100vh] z-[-10] '
                 gestureHandling={'greedy'}
                 styles={currentTheme === 'dark' ? premiumDarkNightThemeStyles : null}
+                options={{
+                    zoomControl: false,
+                    mapTypeControl: false,
+                    streetViewControl: false,
+                    fullscreenControl: false,
+                }}
+                
             >
                 {/* PoiMarkers component will now receive the full list */}
                 <PoiMarkers pois={allLocations} />

@@ -1,5 +1,5 @@
 // components/TimeDropdown.jsx
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useMemo, useEffect } from 'react';
 // Removed import of MainLocations context here, will receive setLocs via props
 
 // Accept originalLocs, setLocs, and current Locs as props
@@ -113,7 +113,7 @@ const TimeDropdown = ({ timeValue, setTimeValue, originalLocs, setLocs, Locs }) 
       ) : (
          // Display "Nobody Found" only if originalLocs is empty after search
          originalLocs && originalLocs.length === 0 && (
-              <div className="block w-full bg-gray-100 text-gray-600 py-3 px-4 rounded-xl cursor-not-allowed text-center h-[3.7rem] flex items-center justify-center shadow-lg">
+              <div className=" w-full bg-gray-100 text-gray-600 py-3 px-4 rounded-xl cursor-not-allowed text-center h-[3.7rem] flex items-center justify-center shadow-lg">
                 Nobody Found in your city!
             </div>
          )
