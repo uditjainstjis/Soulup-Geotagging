@@ -51,8 +51,10 @@ export default function SoulUpMaps() {
     <div className="flex flex-col min-h-screen bg-white">
       {/* Navigation bar */}
       <nav className="bg-gray-800 p-4">
+      <Image width={45} height={32} alt='logo' src='/soulup.jpeg' className='rounded-full'/>
+
         <div className="container mx-auto flex items-center">
-          <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+
         </div>
       </nav>
       {/* Main content with responsive padding */}

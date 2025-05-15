@@ -61,7 +61,7 @@ export default function Home() {
               {/* Right Column: Map */}
               <div className="flex-grow  shadow-around md:min-h-[60vh] lg:min-h-0">
                 <div className="w-full h-full overflow-hidden">
-                  <MapComp />
+                  <MapComp Locs={Locs} setLocs={setLocs} Zoom={Zoom} setZoom={setZoom} setZoomLocs={setZoomLocs} ZoomLocs={ZoomLocs}/>
                 </div>
               </div>
             </div>

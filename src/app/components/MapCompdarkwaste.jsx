@@ -25,7 +25,7 @@ const MapComp = () => {
         const res = await fetch("/api/Loc"); // Calls Next.js API route
         const data = await res.json();
         if (res.ok) {
-          setLocs(data)
+          setLocs(allLocations);
           // console.log(Locs)
           console.log("data from server to plot locations", data)
 

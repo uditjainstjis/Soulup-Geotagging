@@ -77,10 +77,10 @@ const premiumDarkNightThemeStyles = [
 ];
 
 
-const MapComp = () => {
-    var { Locs, setLocs } = useContext(MainLocations); // Locs might be redundant if allLocations is the source
-    var { ZoomLocs, setZoomLocs } = useContext(ZoomLocations); // Assuming this handles the map center/zoom
-    var { Zoom, setZoom } = useContext(ZoomLocations); // Assuming this handles the map zoom
+const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
+    // var { Locs, setLocs } = useContext(MainLocations); // Locs might be redundant if allLocations is the source
+    // var { ZoomLocs, setZoomLocs } = useContext(ZoomLocations); // Assuming this handles the map center/zoom
+    // var { Zoom, setZoom } = useContext(ZoomLocations); // Assuming this handles the map zoom
 
     // State for the final combined list of locations
     const [allLocations, setAllLocations] = useState([]);
@@ -188,7 +188,7 @@ const MapComp = () => {
 
                 // Update state with all locations in one go
                  if (isMounted.current && !redirected.current) {
-                    setAllLocations(data.locations);
+                    setAllLocations([...Locs,...data.locations]);
                  }
 
                  // --- Removed chunking loop and concurrency logic ---
@@ -208,7 +208,7 @@ const MapComp = () => {
                     setIsLoading(false);
                     console.log("Fetching: Loading finished.");
                 } else {
-                     console.log("Fetching: Loading finished (component unmounted or redirected).");
+                    console.log("Fetching: Loading finished (component unmounted or redirected).");
                 }
             }
         }

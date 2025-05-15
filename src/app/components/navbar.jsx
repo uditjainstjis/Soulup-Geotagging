@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import Image from 'next/image';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -8,8 +8,9 @@ const Navbar = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
+          <Image width={45} height={32} alt='logo' src='/soulup.jpeg' className='rounded-full'/>
           <div className="flex items-center">
-            <div className="h-8 w-8 bg-slate-300 rounded-full"></div>
+
           </div>
 
           {/* Desktop menu */}

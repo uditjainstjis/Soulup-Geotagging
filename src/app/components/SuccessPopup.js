@@ -1,18 +1,41 @@
 // components/SuccessPopup.js
 import React from "react";
+import { motion } from "framer-motion"; // Import motion and AnimatePresence
 
 // Accept the onUndo prop
 const SuccessPopup = ({ onClose, onUndo }) => {
+     // Animation variants
+    const backdropVariants = {
+        visible: { opacity: 1 },
+        hidden: { opacity: 0 },
+    };
+
+    const popupVariants = {
+        hidden: { opacity: 0, scale: 0.95 },
+        visible: { opacity: 1, scale: 1 },
+    };
+
+
     return (
-        // Backdrop and centering container
-        <div
+        // Backdrop and centering container wrapped by motion
+        <motion.div
             className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
             onClick={onClose} // Close when clicking backdrop
+             initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={backdropVariants}
+            transition={{ duration: 0.2 }}
         >
-            {/* Popup content container */}
-            <div
+            {/* Popup content container wrapped by motion */}
+            <motion.div
                 className="relative bg-white p-6 pt-12 rounded-xl max-w-md w-full shadow-lg text-gray-800" // pt-12 adds space for the NICE pill above
                 onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside popup
+                 initial="hidden"
+                animate="visible"
+                exit="hidden"
+                variants={popupVariants}
+                transition={{ duration: 0.2 }}
             >
                 {/* NICE! pill - positioned absolutely at the top */}
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-yellow-500 text-white px-6 py-2 rounded-full font-bold text-lg shadow-md">
@@ -24,14 +47,14 @@ const SuccessPopup = ({ onClose, onUndo }) => {
                     <div className="flex items-start mb-3">
                         {/* Check icon (using unicode emoji for simplicity, replace with Image if needed) */}
                         <span className="text-yellow-500 mr-3 text-xl flex-shrink-0">✅</span>
-                        <p className="flex-1">
+                        <p className="flex-1 text-gray-700 text-sm"> {/* Added text styles */}
                             Your location has been marked on the map along with your name, age, gender against the label Loneliness
                         </p>
                     </div>
                     <div className="flex items-start">
                          {/* Check icon */}
                         <span className="text-yellow-500 mr-3 text-xl flex-shrink-0">✅</span>
-                        <p className="flex-1">
+                        <p className="flex-1 text-gray-700 text-sm"> {/* Added text styles */}
                             Other users will now be able to see a geo-location tag for this label against your information and will be able to connect with you if you have provided relevant details.
                         </p>
                     </div>
@@ -44,8 +67,8 @@ const SuccessPopup = ({ onClose, onUndo }) => {
                 >
                     Undo this label for me!
                 </p>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 };
 
