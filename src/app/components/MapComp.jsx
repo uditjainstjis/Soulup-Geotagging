@@ -76,38 +76,130 @@ const premiumDarkNightThemeStyles = [
     { featureType: "water", elementType: "labels.text.stroke", stylers: [{ color: "#040e17" }] },
 ];
 
+// --- Helper function for running functions that return promises with concurrency limit ---
+// Defined outside the component to avoid recreation on every render,
+// but it needs access to the component's refs (isMounted, redirected).
+// We will pass these refs to the function.
+async function runTasksWithConcurrencyLimitWithRefs(taskFunctions, limit, isMountedRef, redirectedRef) {
+    const pool = new Set();
+    let index = 0;
+
+    return new Promise((resolve, reject) => {
+        const enqueueNext = () => {
+            // Stop enqueuing if component unmounted/redirected or no more tasks
+            if (!isMountedRef.current || redirectedRef.current || index >= taskFunctions.length) {
+                 // If all tasks enqueued AND the pool is currently empty, we are done
+                 if (pool.size === 0 && index >= taskFunctions.length) {
+                     resolve();
+                 }
+                 return; // No more tasks to enqueue or invalid state
+            }
+
+            const currentTaskIndex = index++;
+            const taskFunction = taskFunctions[currentTaskIndex];
+
+            // Call the function to get the promise and add it to the pool
+            // The taskFunction itself handles fetching, error checking, and state updates
+            const promise = taskFunction();
+            pool.add(promise);
+
+            promise
+                .then(() => {}) // Success handler (optional, taskFunction handles its own success actions)
+                .catch(error => {
+                     // Task failed - log it. The taskFunction itself should handle 401 redirects.
+                     console.error(`Concurrency runner: Task at index ${currentTaskIndex} failed.`, error);
+                     // The error is re-thrown by the taskFunction itself, which will be caught
+                     // by the main fetchData catch block due to the `await runTasksWithConcurrencyLimitWithRefs`.
+                 })
+                .finally(() => {
+                    // Remove from pool regardless of success or failure
+                    pool.delete(promise);
+                    // Try to enqueue the next task from the queue, keeping concurrency up to limit
+                    // Only continue if component is still mounted and no redirection has occurred
+                    if (isMountedRef.current && !redirectedRef.current) {
+                         enqueueNext();
+                    }
+                });
+
+            // If the pool has space, or if we just added the first task, try to enqueue the next
+            // immediately to keep the pipeline full up to the limit.
+            // Ensure we don't go beyond the total number of tasks available (`index < taskFunctions.length`).
+            if (pool.size < limit && index < taskFunctions.length) {
+                 enqueueNext();
+            } else if (index >= taskFunctions.length && pool.size === 0) {
+                 // Edge case: If we just added the *very last* task and the pool is now empty
+                 // (because limit was >= remaining tasks), then all tasks are done, resolve immediately.
+                  resolve();
+            }
+             // If pool is full, the `finally` callback of completed tasks will call `enqueueNext`.
+        };
+
+        // Start the process by enqueuing the initial set of tasks up to the limit
+        for(let i = 0; i < limit && i < taskFunctions.length; i++) {
+             // Initial check before starting tasks
+             if (!isMountedRef.current || redirectedRef.current) {
+                 console.log("Concurrency runner: Component unmounted/redirected before starting initial tasks.");
+                 return; // Stop starting tasks
+             }
+             enqueueNext();
+        }
+         // Handle empty task list edge case (e.g., total count was 0 or less than initial fetch size)
+         if (taskFunctions.length === 0) {
+            resolve();
+         }
+    });
+}
+
 
 const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
-    // var { Locs, setLocs } = useContext(MainLocations); // Locs might be redundant if allLocations is the source
-    // var { ZoomLocs, setZoomLocs } = useContext(ZoomLocations); // Assuming this handles the map center/zoom
-    // var { Zoom, setZoom } = useContext(ZoomLocations); // Assuming this handles the map zoom
+    // Contexts for locations and zoom.
+    // Note: We are now managing allLocations internally and updating the context from it.
+    // const { Locs, setLocs } = useContext(MainLocations); // Redundant if passed as props? Use props.
+    // const { ZoomLocs, setZoomLocs } = useContext(ZoomLocations); // Redundant if passed as props? Use props.
+    // const { Zoom, setZoom } = useContext(ZoomLocations); // Redundant if passed as props? Use props.
+    // Assuming props are used based on the function signature, comment out useContext for these.
 
     // State for the final combined list of locations
     const [allLocations, setAllLocations] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [totalCount, setTotalCount] = useState(0); // State to store the total count
 
-    // --- Removed state/refs/constants used for chunking ---
-    // const [totalCount, setTotalCount] = useState(0);
-    // const fetchedChunks = useRef(new Map());
-    // const locationsPerChunk = 1000;
-    // const concurrentLimit = 10;
+    // Ref to store fetched chunks by their skip value
+    const fetchedChunks = useRef(new Map());
+
+    // Constants for chunking
+    const locationsPerChunk = 1000;
+    const concurrentLimit = 10; // Adjust based on desired concurrency
 
     const router = useRouter();
     const isMounted = useRef(true);
     const redirected = useRef(false);
     const [currentTheme, setCurrentTheme] = useState('light');
 
-    // --- Removed chunk-related functions ---
-    // reconstructLocations, runTasksWithConcurrencyLimit
+
+    // Helper function to reconstruct the full sorted list from fetchedChunks Map
+    const reconstructLocations = () => {
+        const sortedSkips = Array.from(fetchedChunks.current.keys()).sort((a, b) => a - b);
+        let combinedLocations = [];
+        for (const skip of sortedSkips) {
+            const chunk = fetchedChunks.current.get(skip);
+            if (chunk) { // Ensure the chunk exists before concatenating
+                 combinedLocations = combinedLocations.concat(chunk);
+            } else {
+                console.warn(`reconstructLocations: Chunk for skip=${skip} not found in map.`);
+            }
+        }
+        return combinedLocations;
+    };
+
 
     useEffect(() => {
         isMounted.current = true;
         redirected.current = false;
 
-        // --- Simplified fetchData function ---
         async function fetchData() {
-            // Check if component is still mounted and no redirection has occurred
+            // Check if component is still mounted and no redirection has occurred at the start
             if (!isMounted.current || redirected.current) {
                 console.log("fetchData: Component not mounted or already redirected. Aborting.");
                 return;
@@ -115,9 +207,13 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
 
             setIsLoading(true);
             setError(null);
-            setAllLocations([]); // Clear previous data
+            fetchedChunks.current.clear(); // Clear previous data
+            setAllLocations([]); // Clear state
+
+            let total = 0; // Variable to hold total count during fetching
 
             try {
+                // --- Step 1: Check user details (Sequential) ---
                 console.log("Fetching: Checking user details...");
                 const detailsCheckRes = await fetch('/api/userdetails');
 
@@ -129,7 +225,7 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
                         console.warn("Fetching: Received 401 Unauthorized on user details check. Redirecting.");
                         redirected.current = true; // Prevent multiple redirects
                         router.push('/signin');
-                        setIsLoading(false); // Stop loading indicator
+                         // Do NOT set isLoading(false) or setError here, redirect takes over
                         return; // Stop execution
                     }
                     const errorData = await detailsCheckRes.json().catch(() => ({ message: 'Failed to parse userdetails error' }));
@@ -147,63 +243,165 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
                         redirected.current = true;
                         router.push('/details');
                     }
-                     setIsLoading(false); // Stop loading indicator
+                    // Do NOT set isLoading(false) or setError here, redirect takes over
                     return; // Stop execution
                 }
 
                 console.log("Fetching: User details complete.");
 
-                // --- Single fetch for all locations ---
-                console.log("Fetching: Fetching all locations...");
-                // No skip or limit parameters needed now
-                const res = await fetch('/api/Loc');
+                // --- Step 2: Fetch the first chunk to get total count (Sequential) ---
+                console.log(`Fetching: Fetching initial chunk: skip=0, limit=${locationsPerChunk}`);
+                const initialRes = await fetch(`/api/Loc?skip=0&limit=${locationsPerChunk}`);
 
                 // Check again after fetch
                 if (!isMounted.current || redirected.current) return;
 
-                if (!res.ok) {
-                    if (res.status === 401 && !redirected.current) {
-                        console.warn("Fetching: Received 401 Unauthorized on location fetch. Redirecting.");
-                        redirected.current = true; // Prevent multiple redirects
+                if (!initialRes.ok) {
+                    if (initialRes.status === 401 && !redirected.current) {
+                        console.warn("Fetching: Received 401 Unauthorized on initial fetch. Redirecting.");
+                        redirected.current = true;
                         router.push('/signin');
-                        setIsLoading(false); // Stop loading indicator
-                        return; // Stop execution
+                        return;
                     }
-                    const errorData = await res.json().catch(() => ({ message: 'Failed to parse error' }));
-                    throw new Error(`Failed to fetch locations (status ${res.status}): ${errorData.error || errorData.message || res.statusText}`);
+                    const errorData = await initialRes.json().catch(() => ({ message: 'Failed to parse error' }));
+                    console.error("Fetching: Initial fetch failed:", errorData);
+                    throw new Error(`Failed to fetch initial location chunk (status ${initialRes.status}): ${errorData.error || errorData.message || initialRes.statusText}`);
                 }
 
-                 // Check again after parsing
+                // Check again after parsing
                 if (!isMounted.current || redirected.current) return;
 
-                const data = await res.json();
+                const initialData = await initialRes.json();
 
-                // Verify the response structure (expecting { locations: [...] })
-                if (!data || !Array.isArray(data.locations)) {
-                   console.error("Fetching: Received data is not an array or invalid format:", data);
-                   throw new Error("Invalid data format received from server.");
+                if (!Array.isArray(initialData.locations)) {
+                   console.error("Fetching: Initial data is not an array or invalid format:", initialData);
+                   throw new Error("Invalid data format received from server for initial chunk.");
+                }
+                 // Check if totalCount is available and is a number
+                 if (typeof initialData.totalCount !== 'number') {
+                      console.warn("Fetching: totalCount not provided or is not a number in initial response. Proceeding with fetched items only.");
+                      total = initialData.locations.length; // Assume fetched count is total if totalCount is missing
+                 } else {
+                     total = initialData.totalCount;
+                 }
+                setTotalCount(total);
+                console.log(`Fetching: Initial chunk received. Total locations reported: ${total}. Fetched ${initialData.locations.length} items.`);
+
+                // Store the first chunk if it has data
+                if (initialData.locations.length > 0) {
+                   fetchedChunks.current.set(0, initialData.locations);
                 }
 
-                console.log(`Fetching: Successfully fetched ${data.locations.length} locations.`);
+                // Determine remaining skips needed based on the total count
+                const totalFetchedAfterInitial = initialData.locations.length;
+                const remainingSkips = [];
+                // Only calculate remaining skips if total > totalFetchedAfterInitial
+                for (let skip = totalFetchedAfterInitial; skip < total; skip += locationsPerChunk) {
+                    remainingSkips.push(skip);
+                }
 
-                // Update state with all locations in one go
-                 if (isMounted.current && !redirected.current) {
-                    setAllLocations([...Locs,...data.locations]);
-                 }
+                // Update state with initial data if valid and mounted/not redirected
+                if (isMounted.current && !redirected.current && initialData.locations.length > 0) {
+                   setAllLocations(reconstructLocations());
+                }
 
-                 // --- Removed chunking loop and concurrency logic ---
+
+                if (remainingSkips.length === 0 && totalFetchedAfterInitial >= total) {
+                    console.log("Fetching: Initial chunk covers all data or total is 0.");
+                    // Loading will be set to false in the finally block
+                    return; // Stop execution if no more chunks are needed
+                } else if (remainingSkips.length > 0) {
+                     console.log(`Fetching: ${remainingSkips.length} remaining chunks needed. Starting concurrent fetch with limit ${concurrentLimit}.`);
+                } else if (total > 0 && totalFetchedAfterInitial === 0 && remainingSkips.length === 0) {
+                     // This case is problematic: total > 0 but initial fetch returned 0 and no more skips calculated.
+                     console.warn("Fetching: Total count > 0 but initial fetch returned 0 items and no remaining skips calculated. Potential issue with API or logic.");
+                     // We will proceed to finally block, isLoading will be false, error state is null unless caught earlier.
+                     return; // Stop execution
+                }
+
+
+                // --- Step 3: Create an array of *functions* for the remaining chunks ---
+                // Each function fetches a specific chunk and updates shared state/ref
+                const taskFunctions = remainingSkips.map(skip =>
+                    // Return an async function that will perform the fetch when called
+                    async () => {
+                        // Check component state BEFORE fetch
+                        if (!isMounted.current || redirected.current) {
+                             console.log(`Task function for skip=${skip}: Component unmounted or redirected before fetch. Aborting.`);
+                             // Do not return anything or throw an error here, just stop
+                             // The main promise will resolve when other tasks complete or when pool is empty
+                             return;
+                        }
+                        console.log(`Task function for skip=${skip}: Starting fetch...`);
+                        const res = await fetch(`/api/Loc?skip=${skip}&limit=${locationsPerChunk}`);
+
+                        // Check component state AFTER fetch but BEFORE processing response
+                        if (!isMounted.current || redirected.current) {
+                             console.log(`Task function for skip=${skip}: Component unmounted or redirected after fetch. Aborting processing.`);
+                              return;
+                        }
+
+                        if (!res.ok) {
+                             const errorData = await res.json().catch(() => ({ message: 'Failed to parse error' }));
+                             console.error(`Task function for skip=${skip}: Fetch failed (status ${res.status})`, errorData);
+                             if (res.status === 401 && !redirected.current) {
+                                  redirected.current = true;
+                                  router.push('/signin');
+                                  // Do NOT set isLoading(false) or setError here
+                             }
+                             // Throw an error so the concurrency runner can log it,
+                             // but we rely on the main catch block to potentially set the overall error state
+                             throw new Error(`Failed to fetch chunk skip=${skip} (status ${res.status})`);
+                        }
+
+                        const data = await res.json();
+                        // Check component state AFTER parsing response
+                        if (!isMounted.current || redirected.current) return;
+
+                        if (!Array.isArray(data.locations)) {
+                           console.error(`Task function for skip=${skip}: Received data is not an array`, data);
+                           throw new Error(`Invalid data format for chunk skip=${skip}`);
+                        }
+
+                        console.log(`Task function for skip=${skip}: Successfully fetched ${data.locations.length} locations.`);
+
+                        // Store the fetched chunk data ONLY if component is still mounted and not redirected
+                        if (isMounted.current && !redirected.current) {
+                            fetchedChunks.current.set(skip, data.locations);
+
+                            // Update the state with the combined data from all chunks received so far
+                            // This triggers re-render as data arrives.
+                            setAllLocations(reconstructLocations());
+                        }
+
+                        // No explicit return needed, the promise resolves implicitly
+                   }
+                );
+
+
+                // --- Step 4: Run the task functions concurrently with a limit ---
+                // Pass the refs to the helper function
+                await runTasksWithConcurrencyLimitWithRefs(taskFunctions, concurrentLimit, isMounted, redirected);
+
+                console.log("Fetching: All concurrent chunk tasks finished.");
+
+                // Final state update after all chunks are processed (optional, but good practice)
+                // The state is already being updated progressively, but this ensures the final state is set.
+                if (isMounted.current && !redirected.current) {
+                     setAllLocations(reconstructLocations());
+                }
+
 
             } catch (err) {
                 console.error("Fetching: Error during data fetching process:", err);
                  // Only update error state if component is still mounted and not redirected
-                if (isMounted.current && !redirected.current) {
-                    // Avoid showing error message if it's just a 401 redirect
-                    if (!`${err.message}`.includes("status 401")) {
-                         setError(`Error fetching locations: ${err.message}`);
-                    }
+                 // Avoid showing error message if it's a handled 401 redirect that initiated router.push
+                if (isMounted.current && !redirected.current && !(`${err.message}`.includes("status 401"))) {
+                    setError(`Error fetching locations: ${err.message}`);
                 }
             } finally {
                  // Always stop loading, but only update state if mounted and not redirected
+                 // and only if a redirect hasn't occurred.
                 if (isMounted.current && !redirected.current) {
                     setIsLoading(false);
                     console.log("Fetching: Loading finished.");
@@ -213,7 +411,7 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
             }
         }
 
-        fetchData(); // Initiate the single fetch
+        fetchData(); // Initiate the async fetching process
 
         // Cleanup function to handle component unmount
         return () => {
@@ -221,9 +419,11 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
             console.log("MapComp useEffect cleanup: isMounted set to false");
         };
 
-    }, [router]); // Dependencies: router is needed for push
+    // Dependencies: router for navigation, and chunking constants if they were variables
+    }, [router, locationsPerChunk, concurrentLimit]);
 
     // Effect to update the context when allLocations is updated
+    // Keep this if MainLocations context needs to reflect the cumulatively loaded data
     useEffect(() => {
         if (setLocs) {
             setLocs(allLocations);
@@ -231,11 +431,11 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
     }, [allLocations, setLocs]);
 
 
+    // --- Theme Toggle Logic (remains the same) ---
     const toggleTheme = () => {
         setCurrentTheme(prevTheme => (prevTheme === 'dark' ? 'light' : 'dark'));
     };
 
-    // --- Updated Sizes for Toggle Switch (remains the same) ---
     const scaleFactor = 1.5;
     const baseTrackWidth = 56;
     const baseTrackHeight = 30;
@@ -296,11 +496,16 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
         alignItems: 'center',
         justifyContent: 'center',
     };
+    // --- End Theme Toggle Logic ---
 
+
+    // Use the allLocations state (which gets updated as chunks arrive) for markers
+    const locationsForMarkers = allLocations;
 
     return (
         <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
 
+             {/* Theme Toggle Button */}
              <div style={toggleContainerStyle} className='md:block hidden'>
                 <button
                     onClick={toggleTheme}
@@ -326,12 +531,10 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
                 </button>
             </div>
 
-
-            {/* Simplified Loading Indicator */}
-            {isLoading && (
+            {/* Loading Indicator (Updated to show progress) */}
+            {isLoading && (allLocations.length < totalCount || totalCount === 0) && (
                  <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', padding: '20px', background: 'rgba(0,0,0,0.7)', color: 'white', borderRadius: '8px', zIndex: 1001, textAlign: 'center' }}>
-                    Loading locations...
-                    {/* Removed chunk count display */}
+                    Loading locations... ({allLocations.length}{totalCount > 0 ? ` / ${totalCount}` : ''})
                 </div>
             )}
             {error && (
@@ -341,10 +544,12 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
             )}
 
             <GoogleMapComponent
-                defaultCenter={ZoomLocs} // Assuming ZoomLocs is initialized elsewhere
-                defaultZoom={Zoom} // Assuming Zoom is initialized elsewhere
+                // Using props for center/zoom as indicated by function signature
+                defaultCenter={ZoomLocs}
+                defaultZoom={Zoom}
                 className='md:h-[77vh] md:w-[57vw] w-[100vw] h-[100vh] z-[-10] '
                 gestureHandling={'greedy'}
+                // Apply dark theme styles based on state
                 styles={currentTheme === 'dark' ? premiumDarkNightThemeStyles : null}
                 options={{
                     zoomControl: false,
@@ -352,10 +557,9 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
                     streetViewControl: false,
                     fullscreenControl: false,
                 }}
-                
             >
-                {/* PoiMarkers component will now receive the full list */}
-                <PoiMarkers pois={allLocations} />
+                {/* PoiMarkers component receives the list of locations (growing as chunks load) */}
+                <PoiMarkers pois={locationsForMarkers} />
             </GoogleMapComponent>
         </APIProvider>
     );
