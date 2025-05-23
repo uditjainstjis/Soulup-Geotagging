@@ -100,7 +100,7 @@ const TimeDropdown = ({ timeValue, setTimeValue, originalLocs, setLocs, Locs }) 
         <select
           value={timeValue}
           onChange={handleTimeChange}
-          className="block w-full border border-gray-300 h-[3.7rem] shadow-lg text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
+          className="block w-full border border-gray-300 h-14 shadow-lg text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
         >
            {/* Add a default/placeholder option only if no timeValue is set initially */}
            {timeValue === "" && <option value="" disabled>Filter by time</option>}

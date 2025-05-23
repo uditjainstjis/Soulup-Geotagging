@@ -29,7 +29,7 @@ const SelectDropdown = ({ optionValue, setOptionValue, isDisabled }) => {
                 <select
                     value={optionValue}
                     disabled={isDisabled || true} // Disable during error
-                    className="block w-full border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
+                    className="block w-full border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
                 >
                     <option value="" disabled>
                         Error fetching tags
@@ -46,12 +46,12 @@ const SelectDropdown = ({ optionValue, setOptionValue, isDisabled }) => {
     }
 
     return (
-        <div className="relative">
+        <div className="relative md:text-xl text-lg">
             <select
                 value={optionValue}
                 disabled={isDisabled}
                 onChange={(e) => setOptionValue(e.target.value)}
-                className="block w-[93vw] md:w-full border border-gray-300 h-[3.7rem] shadow-lg  text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
+                className="block w-[93vw] md:w-full border mt-[-20px] border-gray-300 h-12 shadow-lg  text-gray-700 py-1 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
             >
                 <option value="" disabled>
                     Select an option

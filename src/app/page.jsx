@@ -28,9 +28,9 @@ export default function Home() {
             <div className="flex flex-col lg:flex-row gap-8">
 
               {/* Left Column: Controls */}
-              <div className=" flex-shrink-0 md:ml-8 space-y-4 md:relative absolute z-10">
+              <div className=" flex-shrink-0 md:ml-8 space-y-4 md:relative absolute z-10 ">
                 <h1 className="text-4xl font-bold tracking-wide md:block hidden font-sans  text-slate-800">SoulUp Maps</h1>
-                <h2 className="text-2xl  tracking-wider font-sans md:block hidden  text-slate-800">What key challenge's are you facing currently?</h2>
+                <h2 className="md:text-2xl text-lg py-2 pl-1 sm:shadow-none shadow-around rounded-lg md:w-auto  w-[90vw] mx-auto sm:font-normal font-bold  tracking-wide font-sans bg-white  text-slate-800">What key challenge's are you facing now?</h2>
 
                 {/*
                   The Select component (your refactored main component) goes here.
@@ -67,14 +67,14 @@ export default function Home() {
             </div>
           </main>
 
-          <div className="flex flex-row ml-[5vw]">
+          {/* <div className="flex flex-row ml-[5vw]">
                 <img src="cluster.png" className="w-16 mr-3"></img>
                 <p className="text-xs text-start">these blue and red circle shows there are that no. of people in that area</p>
-                </div>
+                </div> */}
 
           {/* Footer */}
-          <footer className="py-2">
-            <p className="text-xs text-gray-500 text-center">
+          <footer className="py-2 md:block hidden">
+            <p className="text-xs  text-gray-500 text-center">
               By using this site, you agree to our <a href="/privacy-policy" target='_blank' className="underline hover:text-gray-700">Privacy Policy</a>.
             </p>
           </footer>

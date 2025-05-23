@@ -123,7 +123,7 @@ export default function SoulUpMaps() {
                 </div>
                 <div className="ml-2 text-sm">
                   <label htmlFor="privacy" className="font-medium text-gray-700">
-                    I agree to the <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a>
+                    I agree to the <a href="/privacy-policy" target="_blank_" className="text-blue-600 hover:underline">Privacy Policy</a>
                   </label>
                 </div>
               </div>
@@ -160,7 +160,7 @@ export default function SoulUpMaps() {
               <h2 className="text-2xl md:text-3xl font-light font-sans mb-4">
                 Start exploring meaningful connects in your area!
               </h2>
-              <div className="bg-gray-100 h-[50vh] md:h-[60vh] lg:h-[75vh] relative overflow-hidden rounded-lg shadow-lg">
+              <div className="bg-gray-100 h-[30vh] md:h-[50vh] lg:h-[75vh] relative overflow-hidden rounded-lg shadow-lg">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Image
                     src='/image.png' // Your map preview image
