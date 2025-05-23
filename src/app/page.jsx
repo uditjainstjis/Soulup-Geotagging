@@ -30,7 +30,7 @@ export default function Home() {
               {/* Left Column: Controls */}
               <div className=" flex-shrink-0 md:ml-8 space-y-4 md:relative absolute z-10 ">
                 <h1 className="text-4xl font-bold tracking-wide md:block hidden font-sans  text-slate-800">SoulUp Maps</h1>
-                <h2 className="md:text-2xl text-lg py-2 pl-1 sm:shadow-none shadow-around rounded-lg md:w-auto  w-[90vw] mx-auto sm:font-normal font-bold  tracking-wide font-sans bg-white  text-slate-800">What key challenge's are you facing now?</h2>
+                <h2 className="sm:text-2xl tx  py-2 pl-1 md:shadow-none shadow-around rounded-lg md:w-auto  w-[90vw] mx-auto sm:font-normal font-bold  tracking-wide font-sans bg-white  text-slate-800">What key challenge's are you facing now?</h2>
 
                 {/*
                   The Select component (your refactored main component) goes here.
@@ -60,7 +60,7 @@ export default function Home() {
 
               {/* Right Column: Map */}
               <div className="flex-grow  shadow-around md:min-h-[60vh] lg:min-h-0">
-                <div className="w-full h-full overflow-hidden">
+                <div className="w-full mx-auto h-full overflow-hidden">
                   <MapComp Locs={Locs} setLocs={setLocs} Zoom={Zoom} setZoom={setZoom} setZoomLocs={setZoomLocs} ZoomLocs={ZoomLocs}/>
                 </div>
               </div>

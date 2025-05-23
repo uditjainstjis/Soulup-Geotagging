@@ -123,6 +123,12 @@ const Select = () => {
         }
     }
 
+    function changed(){
+        setShow(false); // Show search results and time dropdown
+        setShowButton(true); // Hide the "Search" button
+        setTellButton(false);
+    }
+
     // Handler for the first button ("Search")
     function handleFirstButton() {
         console.log("--- handleFirstButton clicked ---");
@@ -135,8 +141,9 @@ const Select = () => {
         }
 
         // State updates after successful validation
+        // Disable the challenge dropdown
+
         setShow(true); // Show search results and time dropdown
-        setisDisabled(true); // Disable the challenge dropdown
         setShowButton(false); // Hide the "Search" button
         setTellButton(true)
 
@@ -146,9 +153,7 @@ const Select = () => {
         searchPeopleWithSameIssue(encodedTag, setLocs);
 
         // Show the survey box after 2 seconds (Keep this if needed)
-        setTimeout(() => {
-            setShowSurvey(true); console.log("Showing survey");
-        }, 2000);
+
 
     }
 
@@ -209,6 +214,9 @@ const Select = () => {
 
     // Handler for the second button ("Tell People")
     async function handleTellPeople() {
+        setTimeout(() => {
+            setShowSurvey(true); console.log("Showing survey");
+        }, 2000);
         console.log("--- handleTellPeople clicked ---");
         // Basic validation
         if (!session?.user?.email) {
@@ -333,6 +341,7 @@ const Select = () => {
                     optionValue={optionValue}
                     setOptionValue={setOptionValue}
                     isDisabled={isDisabled}
+                    changed={changed}
                 />
 
                 {/* Show TimeDropdown and search results only if 'show' is true */}
@@ -374,13 +383,13 @@ const Select = () => {
     </div>
 
     <div className="bg-white rounded-lg shadow-around pt-12 relative z-0">
-      <h2 className="text-[1.30rem] text-center tracking-widest font-sans w-full max-w-md mx-auto break-words px-4">
+      <h2 className="text-sm sm:text-[1.30rem] text-center tracking-widest font-sans w-full max-w-md mx-auto break-words px-4">
         We found <span className="underline">{count}</span> people solving the same challenge as you!
       </h2>
       <br />
       <div className="flex flex-row gap-4 ml-2 items-center">
         <Image src='/avatar.png' className="ml-4 mb-6" width={35} height={35} alt="avatar" />
-        <span className="tracking-wider text-center font-sans font-light mb-6">
+        <span className="tracking-wider text-sm sm:text-xl text-center font-sans font-light mb-6">
           {originalLocs.length} people found in your own city
         </span>
       </div>

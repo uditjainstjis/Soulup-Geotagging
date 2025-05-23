@@ -100,7 +100,7 @@ const TimeDropdown = ({ timeValue, setTimeValue, originalLocs, setLocs, Locs }) 
         <select
           value={timeValue}
           onChange={handleTimeChange}
-          className="block w-full border border-gray-300 h-14 shadow-lg text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
+          className="block w-full tx border border-gray-300 h-12 sm:h-14 shadow-lg text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
         >
            {/* Add a default/placeholder option only if no timeValue is set initially */}
            {timeValue === "" && <option value="" disabled>Filter by time</option>}
@@ -113,7 +113,7 @@ const TimeDropdown = ({ timeValue, setTimeValue, originalLocs, setLocs, Locs }) 
       ) : (
          // Display "Nobody Found" only if originalLocs is empty after search
          originalLocs && originalLocs.length === 0 && (
-              <div className=" w-full bg-gray-100 text-gray-600 py-3 px-4 rounded-xl cursor-not-allowed text-center h-[3.7rem] flex items-center justify-center shadow-lg">
+              <div className=" w-full bg-gray-100 text-gray-600 py-3 px-4 rounded-xl text-sm sm:text-xl cursor-not-allowed mt-[-5px] text-center h-[2.7rem] flex items-center justify-center shadow-lg">
                 Nobody Found in your city!
             </div>
          )

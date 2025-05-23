@@ -27,3 +27,23 @@ body {
 .bg-yellow{
   background-color: #F3D252;
 }
+
+@media (max-height: 740px) {
+  .but{
+    margin-top: 25vh;
+  }
+  .tx{
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-height: 720px) {
+  .but{
+    margin-top: 19vh;
+  }
+}
+@media (max-height: 700px) {
+  .but{
+    margin-bottom: 10vh;
+  }
+}

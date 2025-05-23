@@ -21,7 +21,8 @@ export async function GET(req){
         const count = await Location.countDocuments({tag:tag})
         const locations = await Location.find({tag:tag, city:city})
         
-        console.log("laoasdfa",locations)
+        console.log("laoasdfa",  count)
+
         return NextResponse.json({count, locations})
     }
     catch(err){
