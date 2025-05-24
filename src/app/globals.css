@@ -28,6 +28,17 @@ body {
   background-color: #F3D252;
 }
 
+/* @media (max-height: 1300px) {
+  .ii{
+    width:50vw;
+  }
+}
+@media (max-height: 1023px) {
+  .ii{
+    width:100vw;
+  }
+} */
+
 @media (max-height: 740px) {
   .but{
     margin-top: 25vh;
@@ -44,6 +55,30 @@ body {
 }
 @media (max-height: 700px) {
   .but{
-    margin-bottom: 10vh;
+    margin-top: 15vh;
+  }
+  .kk{
+    margin-top: 60vh;
+  }
+}
+@media (max-height: 630px) {
+  .but{
+    margin-top: 10vh;
+  }
+  .kk{
+    margin-top: 55vh;
+  }
+}
+@media (max-height: 600px) {
+  .but{
+    margin-top: 5vh;
+  }
+}
+@media (max-height: 565px) {
+  .but{
+    margin-top: 1vh;
+  }
+  .kk{
+    margin-top: 50vh;
   }
 }

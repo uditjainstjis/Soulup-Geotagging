@@ -547,7 +547,7 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
                 // Using props for center/zoom as indicated by function signature
                 defaultCenter={ZoomLocs}
                 defaultZoom={Zoom}
-                className='md:h-[77vh] xl:w-[57vw] relative  w-[100vw] h-[100vh] '
+                className=' lg:w-[45vw] xl:w-[57vw] md:h-[77vh] w-[100vw] ii  relative  h-[100vh] '
                 gestureHandling={'greedy'}
                 // Apply dark theme styles based on state
                 styles={currentTheme === 'dark' ? premiumDarkNightThemeStyles : null}

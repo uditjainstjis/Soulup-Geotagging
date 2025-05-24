@@ -127,6 +127,7 @@ const Select = () => {
         setShow(false); // Show search results and time dropdown
         setShowButton(true); // Hide the "Search" button
         setTellButton(false);
+        setShowCard(true)
     }
 
     // Handler for the first button ("Search")
@@ -356,7 +357,7 @@ const Select = () => {
                         />
                         {/* Search results display block */}
                         {(
-  <div className={`relative ${showCard?'':'invisible'}`}>
+  <div className={`relative av ${showCard?'':'invisible '}`}>
     <div className="absolute top-2 right-2 z-20 cursor-pointer" onClick={() => setShowCard(false)}> 
        <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -377,19 +378,19 @@ const Select = () => {
 
     {/* Your Card Starts Here */}
     <div className="relative flex justify-center items-center text-center mt-8">
-      <div className="bg-yellow-500 rounded-full text-center flex items-center justify-center text-white w-32 h-10 mx-auto absolute -bottom-5 z-10">
+      <div className="bg-yellow-500 rounded-full text-lg sm:text-xl text-center flex items-center font-sans justify-center text-white sm:w-32 sm:h-10 w-28 h-8 mx-auto absolute sm:-bottom-5 -bottom-4 z-10">
         YAY
       </div>
     </div>
 
     <div className="bg-white rounded-lg shadow-around pt-12 relative z-0">
-      <h2 className="text-sm sm:text-[1.30rem] text-center tracking-widest font-sans w-full max-w-md mx-auto break-words px-4">
+      <h2 className="text-sm md:text-2xl sm:text-xl text-center tracking-widest font-sans w-full max-w-md mx-auto break-words px-4">
         We found <span className="underline">{count}</span> people solving the same challenge as you!
       </h2>
       <br />
       <div className="flex flex-row gap-4 ml-2 items-center">
         <Image src='/avatar.png' className="ml-4 mb-6" width={35} height={35} alt="avatar" />
-        <span className="tracking-wider text-sm sm:text-xl text-center font-sans font-light mb-6">
+        <span className="tracking-wider text-sm md:text-2xl sm:text-xl text-center font-sans font-light mb-6">
           {originalLocs.length} people found in your own city
         </span>
       </div>
