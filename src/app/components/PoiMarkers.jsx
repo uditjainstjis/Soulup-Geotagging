@@ -59,11 +59,14 @@ const PoiMarkers = ({ pois }) => {
         const newMarkers = {};
         if (pois && pois.length > 0) {
             const defaultColor = '#FBBC04'; // Yellow
-            const soulupColor = '#DC2626'; // Red (Tailwind's red-600)
+            const soulupColor = '#3BB628'; // Red (Tailwind's red-600)
 
             pois.forEach((poi, idx) => {
-                const isSoulup = getSocialPlatformName(poi.socialProfile) === 'Soulup';
+                const isSocialProfileEmpty = !poi.socialProfile || poi.socialProfile.trim() === '';
+
+                const isSoulup = !isSocialProfileEmpty && getSocialPlatformName(poi.socialProfile) === 'Soulup';
                 const pinColor = isSoulup ? soulupColor : defaultColor;
+                
 
                 // Create the SVG string with the chosen color (inner circle is handled by the function)
                 const svgString = createPinSvg(pinColor);
