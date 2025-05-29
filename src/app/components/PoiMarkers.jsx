@@ -64,7 +64,7 @@ const PoiMarkers = ({ pois }) => {
             pois.forEach((poi, idx) => {
                 const isSocialProfileEmpty = !poi.socialProfile || poi.socialProfile.trim() === '';
 
-                const isSoulup = !isSocialProfileEmpty && getSocialPlatformName(poi.socialProfile) === 'Soulup';
+                const isSoulup = !isSocialProfileEmpty;
                 const pinColor = isSoulup ? soulupColor : defaultColor;
                 
 
