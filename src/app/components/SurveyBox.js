@@ -219,7 +219,7 @@ const SurveyPopup = ({ onClose }) => {
                 
                 {/* Question content */}
                 <div className="p-6 text-center">
-                    <h4 className="text-2xl font-bold text-gray-800 mb-6">{question}</h4>
+                    <h4 className="md:text-2xl text-xl font-bold text-gray-800 mb-6">{question}</h4>
                     
                     {displayTag && (
                         <p className="text-lg text-gray-600 italic mb-8">
@@ -230,14 +230,14 @@ const SurveyPopup = ({ onClose }) => {
                     {/* Buttons */}
                     <div className="flex justify-center gap-4 mt-6 mb-4">
                         <button
-                            className="bg-yellow text-gray-800 px-12 py-3 rounded-full font-bold text-xl hover:bg-yellow transition disabled:opacity-50"
+                            className="bg-yellow text-gray-800 px-12 py-3 rounded-full font-bold text-lg md:text-xl hover:bg-yellow transition disabled:opacity-50"
                             onClick={() => submitResponse("Yes")}
                             disabled={isSubmitting}
                         >
                             YES
                         </button>
                         <button
-                            className="bg-yellow text-gray-800 px-12 py-3 rounded-full font-bold text-xl hover:bg-yellow transition disabled:opacity-50"
+                            className="bg-yellow text-gray-800 px-12 py-3 rounded-full font-bold text-lg md:text-xl hover:bg-yellow transition disabled:opacity-50"
                             onClick={() => submitResponse("No")}
                             disabled={isSubmitting}
                         >

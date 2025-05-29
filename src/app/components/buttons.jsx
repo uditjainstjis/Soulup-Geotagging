@@ -25,9 +25,9 @@ const Buttons = ({ showButton, tellButton, handleFirstButton, handleTellPeople }
             )}
 
             {(!showButton && tellButton && temp )&& (
-                <div className="flex flex-col but mt-[35vh] justify-end sm:mt-[-5px]">
+                <div className="flex flex-col but mt-[30vh] justify-end sm:mt-[-5px]">
                     <button
-                        className="animate-fade-in bg-yellow  text-light text-lg text-black sm:text-bold  mt-12 rounded-full px-4 md:text-bold h-[3.25rem] w-full self-end border-1 transition-all duration-300 active:scale-105 active:bg-yellow active:border-yellow" // Added more pronounced active effect
+                        className="animate-fade-in bg-yellow  text-light text-lg sm:mt-6 mt-[-60px] text-black sm:text-bold  rounded-full px-4 md:text-bold h-[3.25rem] w-full self-end border-1 transition-all duration-300 active:scale-105 active:bg-yellow active:border-yellow" // Added more pronounced active effect
                         onClick={()=>{handleTellPeople(); changeTemp();}}
                     >
                         Mark me too on the map for this!
