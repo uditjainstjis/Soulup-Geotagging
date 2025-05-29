@@ -94,13 +94,13 @@ const TimeDropdown = ({ timeValue, setTimeValue, originalLocs, setLocs, Locs }) 
   };
 
   return (
-    <div className="relative"> {/* Removed animate-fade-in, parent handles it */}
+    <div className="relative mt-[-7px]"> {/* Removed animate-fade-in, parent handles it */}
        {/* Displaying the dropdown only if there are available options based on search results */}
       {availableOptions.length > 0 ? (
         <select
           value={timeValue}
           onChange={handleTimeChange}
-          className="block w-full tx border border-gray-300 h-12 sm:h-14 shadow-lg text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
+          className="block w-[90vw] md:w-full tx border border-gray-300 shadow-lg text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:border-blue-500 appearance-none"
         >
            {/* Add a default/placeholder option only if no timeValue is set initially */}
            {timeValue === "" && <option value="" disabled>Filter by time</option>}
@@ -113,7 +113,7 @@ const TimeDropdown = ({ timeValue, setTimeValue, originalLocs, setLocs, Locs }) 
       ) : (
          // Display "Nobody Found" only if originalLocs is empty after search
          originalLocs && originalLocs.length === 0 && (
-              <div className=" w-full bg-gray-100 text-gray-600 py-3 px-4 rounded-xl text-sm sm:text-xl cursor-not-allowed mt-[-5px] text-center h-[2.7rem] flex items-center justify-center shadow-lg">
+              <div className=" w-full bg-gray-100  text-gray-600 py-3 px-4 rounded-xl text-sm sm:text-xl cursor-not-allowed text-center h-[2.7rem] flex items-center justify-center shadow-lg">
                 Nobody Found in your city!
             </div>
          )
@@ -122,10 +122,8 @@ const TimeDropdown = ({ timeValue, setTimeValue, originalLocs, setLocs, Locs }) 
 
       {/* Dropdown arrow icon - display only if dropdown is visible */}
       {availableOptions.length > 0 && (
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 h-[3.7rem]"> {/* Match height */}
-          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-          </svg>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
         </div>
       )}
     </div>

@@ -132,7 +132,7 @@ export default function SoulUpMaps() {
                 About
               </button>
               <button 
-                className={`px-4 py-3 md:px-6 md:py-4 text-lg md:text-xl font-bold rounded-full bg-yellow-300`}
+                className={`px-4 py-3 md:px-6 md:py-4 text-lg md:text-xl font-bold rounded-full bg-yellow`}
                 onClick={() => setShowWalkthrough(true)}>
                 Walkthrough
               </button>
@@ -271,7 +271,7 @@ You can give your LinkedIn/Instagram link. <span className="text-red-500 font-sa
           
           {/* Login button */}
           <div className="mb-8 text-center md:text-left">
-            <button className="bg-yellow-300 hover:bg-yellow-400 px-6 md:px-8 py-3 rounded-full font-medium">
+            <button className="bg-yellow hover:bg-yellow px-6 md:px-8 py-3 rounded-full font-medium">
               <a href="#login">Login/SignUp</a>
             </button>
           </div>

@@ -1,12 +1,22 @@
-import React from "react";
+import {React, useState, useEffect} from "react";
 
 const Buttons = ({ showButton, tellButton, handleFirstButton, handleTellPeople }) => {
+    const [temp, setTemp] = useState(true);
+
+    function changeTemp(){
+        setTemp(!temp);
+    }
+    useEffect(()=>{
+        if(!showButton){
+            setTemp(true);
+        }
+    }, [showButton])
     return (
         <>
             {showButton && (
                 <div className="flex flex-col kk md:mt-0 mt-[65vh] justify-end">
                     <button
-                        className="bg-yellow md:mt-3   rounded-full px-4 text-light text-lg sm:text-bold h-[3.25rem] w-full text-white self-end border-1 transition-transform duration-200 active:scale-95" // Added transition and active scale
+                        className="bg-[#F4D251] md:mt-3   rounded-full px-4 text-light text-lg sm:text-bold h-[3.25rem] w-full text-black self-end border-1 transition-transform duration-200 active:scale-95" // Added transition and active scale
                         onClick={handleFirstButton}
                     >
                         Find others like you
@@ -14,11 +24,11 @@ const Buttons = ({ showButton, tellButton, handleFirstButton, handleTellPeople }
                 </div>
             )}
 
-            {(!showButton && tellButton )&& (
+            {(!showButton && tellButton && temp )&& (
                 <div className="flex flex-col but mt-[35vh] justify-end sm:mt-[-5px]">
                     <button
-                        className="animate-fade-in bg-yellow border-2  md:text-2xl sm:text-xl text-sm border-orange-200 mt-3 rounded-full px-4 md:text-bold h-[3.25rem] w-full text-white self-end border-1 transition-all duration-300 active:scale-105 active:bg-yellow-600 active:border-yellow-600" // Added more pronounced active effect
-                        onClick={handleTellPeople}
+                        className="animate-fade-in bg-yellow  text-light text-lg text-black sm:text-bold  mt-12 rounded-full px-4 md:text-bold h-[3.25rem] w-full self-end border-1 transition-all duration-300 active:scale-105 active:bg-yellow active:border-yellow" // Added more pronounced active effect
+                        onClick={()=>{handleTellPeople(); changeTemp();}}
                     >
                         Mark me too on the map for this!
                     </button>

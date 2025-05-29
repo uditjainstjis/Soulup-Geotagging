@@ -1,9 +1,33 @@
 // components/SuccessPopup.js
-import React from "react";
+import {React, useState, useEffect} from "react";
 import { motion } from "framer-motion"; // Import motion and AnimatePresence
 
 // Accept the onUndo prop
 const SuccessPopup = ({ onClose, onUndo }) => {
+    const [hourSize, setHourSize] = useState(null);
+
+    useEffect(()=>{
+        async function getHourSize(){
+            try {
+                const response = await fetch('/api/hourSize');
+                if(response.ok) {
+                    const data = await response.json();
+                    console.log("Fetched hour size:", data.windowWidth);
+                    setHourSize(data.windowWidth);
+                } else {
+                    console.error("Failed to fetch hour size");
+                    setHourSize(24); // Default fallback
+                }
+            } catch (error) {
+                console.error("Error fetching hour size:", error);
+                setHourSize(24); // Default fallback
+            }
+        }
+        getHourSize()
+    })
+
+
+    
      // Animation variants
     const backdropVariants = {
         visible: { opacity: 1 },
@@ -38,8 +62,8 @@ const SuccessPopup = ({ onClose, onUndo }) => {
                 transition={{ duration: 0.2 }}
             >
                 {/* NICE! pill - positioned absolutely at the top */}
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-yellow-500 text-white px-6 py-2 rounded-full font-bold text-lg shadow-md">
-                    NICE!
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-yellow text-white px-6 py-2 rounded-full font-bold text-lg shadow-md">
+                    TAG ADDED!
                 </div>
 
                 {/* Main Content Area */}
@@ -58,6 +82,9 @@ const SuccessPopup = ({ onClose, onUndo }) => {
                             Other users will now be able to see a geo-location tag for this label against your information and will be able to connect with you if you have provided relevant details.
                         </p>
                     </div>
+                </div>
+                <div>
+                    <p className="text-red-400 pt-3 pb-1 px-8 font-bold leading-5 text-sm text-center">Note: You can only add a tag against yourself ONCE in {hourSize} hours</p>
                 </div>
 
                 {/* Undo action text - Now calls the onUndo prop */}

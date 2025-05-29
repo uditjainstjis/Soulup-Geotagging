@@ -201,10 +201,10 @@ const SurveyPopup = ({ onClose }) => {
 
     // Render the survey popup
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
+        <div className="fixed inset-0  flex items-center justify-center bg-black bg-opacity-50 z-[1009] p-4">
             <div className="bg-white rounded-2xl shadow-lg max-w-md w-full relative overflow-hidden">
                 {/* Header with poll title */}
-                <div className="bg-yellow-300 py-3 px-6 text-center">
+                <div className="bg-yellow py-3 px-6 text-center">
                     <h3 className="text-xl font-bold text-gray-800">TODAYS POLL</h3>
                 </div>
                 
@@ -230,14 +230,14 @@ const SurveyPopup = ({ onClose }) => {
                     {/* Buttons */}
                     <div className="flex justify-center gap-4 mt-6 mb-4">
                         <button
-                            className="bg-yellow-300 text-gray-800 px-12 py-3 rounded-full font-bold text-xl hover:bg-yellow-400 transition disabled:opacity-50"
+                            className="bg-yellow text-gray-800 px-12 py-3 rounded-full font-bold text-xl hover:bg-yellow transition disabled:opacity-50"
                             onClick={() => submitResponse("Yes")}
                             disabled={isSubmitting}
                         >
                             YES
                         </button>
                         <button
-                            className="bg-yellow-300 text-gray-800 px-12 py-3 rounded-full font-bold text-xl hover:bg-yellow-400 transition disabled:opacity-50"
+                            className="bg-yellow text-gray-800 px-12 py-3 rounded-full font-bold text-xl hover:bg-yellow transition disabled:opacity-50"
                             onClick={() => submitResponse("No")}
                             disabled={isSubmitting}
                         >
@@ -263,7 +263,7 @@ export default function SurveyPopupDemo() {
     };
     
     return (
-        <div className="p-4">
+        <div className="p-4 z-[1005]">
             {showPopup ? (
                 <SurveyPopup onClose={handleClose} />
             ) : (

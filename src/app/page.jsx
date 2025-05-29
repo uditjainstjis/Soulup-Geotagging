@@ -28,7 +28,7 @@ export default function Home() {
             <div className="flex flex-col lg:flex-row gap-8">
               <div className=" flex-shrink-0 md:ml-8 space-y-4 md:relative absolute z-10 ">
                 <h1 className="text-4xl font-bold tracking-wide md:block hidden font-sans  text-slate-800">SoulUp Maps</h1>
-                <h2 className="sm:text-xl md:text-2xl tx  py-2 pl-1 md:shadow-none shadow-around rounded-lg md:w-auto  w-[90vw] mx-auto sm:font-normal font-bold  tracking-wide font-sans bg-white  text-slate-800">What key challenge's are you facing now?</h2>
+                <h2 className="sm:text-xl md:text-2xl tx  py-2 pl-1 md:shadow-none shadow-around rounded-lg md:w-auto  w-[90vw] mx-auto sm:font-normal font-bold  tracking-wide font-sans bg-white  text-slate-800">What key challenge are you facing now?</h2>
                 <div className="relative">
                   <Select /> {/* Select might consume MainLocations, ensure it uses useContext correctly */}
                 </div>

@@ -358,45 +358,59 @@ const Select = () => {
                         />
                         {/* Search results display block */}
                         {(
-  <div className={`relative av ${showCard?'':'invisible '}`}>
-    <div className="absolute top-2 right-2 z-20 cursor-pointer" onClick={() => setShowCard(false)}> 
-       <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-5 w-5 text-gray-500 hover:text-gray-700"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path
-          fillRule="evenodd"
-          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414
-          1.414L11.414 10l4.293 4.293a1 1 0 01-1.414
-          1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586
-          10 4.293 5.707a1 1 0 010-1.414z"
-          clipRule="evenodd"
-        />
-      </svg> 
-    </div>
+                            <div className={`relative mt-5 av ${showCard ? '' : 'invisible '}`}>
 
-    {/* Your Card Starts Here */}
-    <div className="relative flex justify-center items-center text-center mt-8">
-      <div className="bg-yellow-500 rounded-full text-lg sm:text-xl text-center flex items-center font-sans justify-center text-white sm:w-32 sm:h-10 w-28 h-8 mx-auto absolute sm:-bottom-5 -bottom-4 z-10">
-        YAY
-      </div>
-    </div>
+<div className="bg-yellow rounded-full text-lg sm:text-xl text-center flex items-center font-sans justify-center text-white sm:w-32 sm:h-10 w-28 h-8 mx-auto absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+  YAY
+</div>
 
-    <div className="bg-white rounded-lg shadow-around pt-12 relative z-0">
-      <h2 className="text-sm md:text-2xl sm:text-xl text-center tracking-widest font-sans w-full max-w-md mx-auto break-words px-4">
-        We found <span className="underline">{count}</span> people solving the same challenge as you!
-      </h2>
-      <br />
-      <div className="flex flex-row gap-4 ml-2 items-center">
-        <Image src='/avatar.png' className="ml-4 mb-6" width={35} height={35} alt="avatar" />
-        <span className="tracking-wider text-sm md:text-2xl sm:text-xl text-center font-sans font-light mb-6">
-          {originalLocs.length} people found in your own city
-        </span>
-      </div>
-    </div>
+<div className="bg-white rounded-lg shadow-around pt-12 relative z-0">
+  <div className="absolute top-2 right-2 z-20 cursor-pointer" onClick={() => setShowCard(false)}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5 text-gray-500 hover:text-gray-700"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fillRule="evenodd"
+        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 011.414
+        1.414L11.414 10l4.293 4.293a1 1 0 01-1.414
+        1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586
+        10 4.293 5.707a1 1 0 010-1.414z"
+        clipRule="evenodd"
+      />
+    </svg>
   </div>
+
+  <h2 className="text-sm md:text-2xl sm:text-xl text-center tracking-widest font-sans w-full max-w-md mx-auto break-words px-4">
+    We found <span className="underline">{count}</span> people solving the same challenge as you!
+  </h2>
+
+  <p className="text-red-400 pt-3 md:text-lg  px-8 font-bold leading-5 text-sm text-center">Zoom into locations to know more about them.</p>
+
+  
+
+  <div className="flex flex-col ">
+    <div className="flex flex-row pt-3 gap-2 ml-2 items-center">
+    <Image src='/avatar.png' className="ml-4 mb-6" width={35} height={35} alt="avatar" />
+    <span className="tracking-wider text-sm md:text-xl sm:text-xl text-center font-sans font-light mb-6">
+      {originalLocs.length} people found in your own city
+    </span>
+    </div>
+    <div className="flex flex-row pt-3 gap-2 ml-2 items-center">
+    <Image src='/icon.png' className="ml-6 mb-6" width={25} height={25} alt="avatar" />
+    <span className="tracking-wider text-sm md:text-xl sm:text-xl font-sans font-light mb-6">
+    People who are available to start a
+    conversation
+    </span>
+    </div>
+
+  </div>
+
+  
+</div>
+</div>
 )}
 
 
