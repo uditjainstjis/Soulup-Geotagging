@@ -192,7 +192,10 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
         }
         return combinedLocations;
     };
-
+    useEffect(()=>{
+        console.log('changedd')
+        console.log(Locs)
+      }, [Locs])
 
     useEffect(() => {
         isMounted.current = true;
@@ -499,8 +502,7 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
     // --- End Theme Toggle Logic ---
 
 
-    // Use the allLocations state (which gets updated as chunks arrive) for markers
-    const locationsForMarkers = allLocations;
+
 
     return (
         <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}>
@@ -559,7 +561,7 @@ const MapComp = ({Locs, setLocs, ZoomLocs, setZoomLocs, Zoom, setZoom}) => {
                 }}
             >
                 {/* PoiMarkers component receives the list of locations (growing as chunks load) */}
-                <PoiMarkers pois={locationsForMarkers} />
+                <PoiMarkers pois={Locs} />
             </GoogleMapComponent>
         </APIProvider>
     );

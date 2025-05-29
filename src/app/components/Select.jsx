@@ -70,7 +70,7 @@ const Select = () => {
     const [originalLocs, setOriginalLocs] = useState([]); // Store unfiltered locations
 
     // Function to search for people with the same issue
-    async function searchPeopleWithSameIssue(encodedTag, setLocs) {
+    async function searchPeopleWithSameIssue(encodedTag) {
        console.log("--- Calling searchPeopleWithSameIssue ---");
        console.log("Searching for tag:", decodeURIComponent(encodedTag), "in city:", city);
        try {
@@ -84,6 +84,7 @@ const Select = () => {
                console.log("Fetched Search Data:", data);
 
                setLocs(data.locations);
+               console.log('trieed to set locs')
                setCount(data.count);
                setOriginalLocs(data.locations); // Store the original full list for resetting
            } else {
@@ -151,7 +152,7 @@ const Select = () => {
         console.log("State updates initiated by handleFirstButton:", { show: true, isDisabled: true, showButton: false });
 
 
-        searchPeopleWithSameIssue(encodedTag, setLocs);
+        searchPeopleWithSameIssue(encodedTag);
 
         // Show the survey box after 2 seconds (Keep this if needed)
 
@@ -189,7 +190,7 @@ const Select = () => {
                 // Refresh the map/search results after successful undo
                 // Use the stored tag name to refresh the search for that tag
                 const encodedTag = encodeURIComponent(tagName || optionValue); // Fallback to current optionValue
-                searchPeopleWithSameIssue(encodedTag, setLocs);
+                searchPeopleWithSameIssue(encodedTag);
 
                 // Clear the stored tag details as it's now undone
                 setLastAddedTagDetails(null);
@@ -291,7 +292,7 @@ const Select = () => {
 
             // Since the tag was added, refresh the search results
             const encodedTag = encodeURIComponent(optionValue);
-            searchPeopleWithSameIssue(encodedTag, setLocs);
+            searchPeopleWithSameIssue(encodedTag);
         })
         .catch(err => {
             console.error("Failed to send data", err);
